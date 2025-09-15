@@ -2,7 +2,7 @@ import os, json, glob
 from tqdm import tqdm
 import random
 import numpy as np
-
+ 
 def random_shuffle_conversations(conversations):
     question_nums = len(conversations)
     assert question_nums % 2 == 0, 'Pairs incomplete'

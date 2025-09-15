@@ -2,7 +2,7 @@ import os, json, csv, glob
 from tqdm import tqdm 
 from collections import defaultdict
 import argparse
-
+ 
 def get_best_view_wts(ann_path, bbox_path, scnearios, reference_views):
     best_view_video = {}
     for scneario in tqdm(scnearios):

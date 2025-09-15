@@ -1,0 +1,43 @@
+{
+"aicity_global_dataset": {
+  "file_name": "/workspace/Park/LLaMA-Factory/data/final_global_train_dataset.json",
+  "formatting": "sharegpt",
+  "columns": {
+    "messages": "conversations",
+    "images": "images"
+  }
+},
+"aic25_task1_dataset": {
+  "file_name": "/workspace/processed_data/wts_dataset_train.jsonl",
+  "formatting": "sharegpt",
+  "columns": {
+    "messages": "conversations",
+    "images": "images"
+  }
+},
+"aicity_local_dataset": {
+  "file_name": "final_local_train_dataset.json",
+  "formatting": "sharegpt",
+  "columns": {
+    "messages": "conversations",
+    "images": "images"
+  }
+},
+"aicity_vqa_task2_dataset": {
+  "file_name": "/workspace/processed_data_subtask2/wts_dataset_vqa_train.jsonl",
+  "formatting": "sharegpt",
+  "columns": {
+    "messages": "conversations",
+    "images": "images"
+  }
+},
+"aicity_vqa_task2_dataset_fulldata": {
+  "file_name": "/workspace/processed_data_subtask2_best_view/wts_dataset_train_subtask2_best_view.jsonl",
+  "formatting": "sharegpt",
+  "columns": {
+    "messages": "conversations",
+    "images": "images",
+    "system": "system"
+  }
+}
+}

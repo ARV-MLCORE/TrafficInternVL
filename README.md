@@ -69,7 +69,7 @@ TrafficInternVL/
    ```bash
    cd data-preparation/task1
    # Update paths in the script first, then run:
-   python prepare_data_train.py  # or the appropriate script
+   ./prepare_data_train.sh
    ```
    This will generate: `wts_bdd_local_train.json`
 
@@ -170,8 +170,8 @@ Before running the pipeline, make sure to update these paths in the respective f
 
 | File/Script | Purpose |
 |-------------|---------|
-| `data-preparation/task1/prepare_data_train.py` | Prepare training data |
-| `data-preparation/task1/prepare_data_test.sh` | Prepare test data |
+| `data-preparation/task1/prepare_data_train.sh` | **Prepare training data** |
+| `data-preparation/task1/prepare_data_test.sh` | **Prepare test data** |
 | `data-preparation/task1/processed_anno/internvl_format/final_dataset.sh` | Convert to InternVL format |
 | `data-preparation/task1/processed_anno/internvl_format/update_prompt.sh` | Update prompts |
 | `models-training/setup_environment.sh` | Setup training environment |

@@ -116,10 +116,15 @@ TrafficInternVL/
 
 2. **Start training:**
    ```bash
-   # The dataset name will be: aicity_local_dataset
-   # You can modify output_dir to change where the model is saved
-   python train.py --dataset aicity_local_dataset --output_dir ./checkpoints/your_model_name
+   # Edit train.sh to modify output_dir if needed, then run:
+   ./train.sh
    ```
+   
+   **Note:** The training script uses:
+   - Dataset: `aicity_local_dataset`
+   - Model: `OpenGVLab/InternVL3-8B-hf`
+   - LoRA fine-tuning with rank 64
+   - Default output directory: `model/InternVL-38B/r8-task1-github-test`
 
 ### Step 6: Model Export and Inference
 
@@ -128,7 +133,7 @@ TrafficInternVL/
    cd models-training
    # Update the script with your trained model path
    # Edit export.sh and set:
-   # --adapter_name_or_path=./checkpoints/your_model_name
+   # --adapter_name_or_path=model/InternVL-38B/r8-task1-github-test (or your custom output_dir)
    # --export_dir=./exported_models/your_exported_model
    ./export.sh
    ```
@@ -152,11 +157,11 @@ Before running the pipeline, make sure to update these paths in the respective f
 - [ ] `generate_test_frames_path` in `prepare_data_test.sh`
 
 ### Training Scripts:
-- [ ] `output_dir` in training command
+- [ ] `output_dir` in `train.sh` (default: `model/InternVL-38B/r8-task1-github-test`)
 - [ ] Dataset name in `dataset_info.json` (should be `aicity_local_dataset`)
 
 ### Export and Inference Scripts:
-- [ ] `--adapter_name_or_path` in `export.sh`
+- [ ] `--adapter_name_or_path` in `export.sh` (should point to `model/InternVL-38B/r8-task1-github-test` or your custom output_dir)
 - [ ] `--export_dir` in `export.sh`
 - [ ] `--model_path` in `inference_image_input.sh`
 - [ ] `--test_data_dir` in `inference_image_input.sh`
@@ -170,6 +175,7 @@ Before running the pipeline, make sure to update these paths in the respective f
 | `data-preparation/task1/processed_anno/internvl_format/final_dataset.sh` | Convert to InternVL format |
 | `data-preparation/task1/processed_anno/internvl_format/update_prompt.sh` | Update prompts |
 | `models-training/setup_environment.sh` | Setup training environment |
+| `models-training/train.sh` | **Main training script** |
 | `models-training/data/dataset_info.json` | Dataset configuration |
 | `models-training/export.sh` | Export trained model |
 | `models-training/inference_image_input.sh` | Run inference |

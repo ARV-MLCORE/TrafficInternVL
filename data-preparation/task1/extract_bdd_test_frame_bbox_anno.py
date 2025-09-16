@@ -4,7 +4,7 @@ from tqdm import tqdm
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--root', type=str, default='/workspace/Park/AICITY2024_Track2_AliOpenTrek_CityLLaVA/data_preprocess/data/', help='data root path')
+parser.add_argument('--root', type=str, help='data root path')
 parser.add_argument('--save-folder', type=str, default='processed_anno', help='dirname for saving json file')
 
 args = parser.parse_args()

@@ -124,8 +124,10 @@ def extract_frames(source_video, source_anno, save_folder):
 
         ret, frame = cap.read()
         if ret:
-            cv2.imwrite(f'{save_folder}/{label}.jpg', frame)
-            cv2.imwrite(f'{save_folder.replace("bbox_global", "bbox_local")}/{label}.jpg', frame)
+            # Convert label to number using number_phrase_map
+            label_number = number_phrase_map.get(label, label)
+            cv2.imwrite(f'{save_folder}/{label_number}.jpg', frame)
+            cv2.imwrite(f'{save_folder.replace("bbox_global", "bbox_local")}/{label_number}.jpg', frame)
         else:
             print(f"Error: Unable to extract frame for event {label}, source video: {source_video}")
 
@@ -158,11 +160,14 @@ for item in no_bbox_frames_ones:
                 view = 'overhead'
 
     save_folder = os.path.join(root, item)
+    os.makedirs(save_folder, exist_ok=True)
     extract_frames(source_video, source_anno, save_folder)
     for image in ['0.jpg', '1.jpg', '2.jpg', '3.jpg', '4.jpg']:
         target_path = os.path.abspath(os.path.join(root, item, image))
-        assert os.path.exists(target_path)
-        perspective[target_path] = view
+        if not os.path.exists(target_path):
+            print(f"Warning: {target_path} does not exist")
+        else:
+            perspective[target_path] = view
 
 for item in os.listdir(root):
     images = os.listdir(os.path.join(root, item))

@@ -4,7 +4,7 @@ from tqdm import tqdm
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--root', type=str, default='/workspace/Park/AICITY2024_Track2_AliOpenTrek_CityLLaVA/data_preprocess/data/', help='data root path')
+parser.add_argument('--root', type=str)
 parser.add_argument('--save-folder', type=str, default='processed_anno', help='dirname for saving json file')
 
 args = parser.parse_args()
@@ -16,6 +16,10 @@ bbox_path = os.path.join(args.root, 'WTS_DATASET_PUBLIC_TEST_BBOX/annotations/bb
 video_with_bbox_results = dict()
 
 for item in tqdm(os.listdir(video_path)):
+    # Skip normal_trimmed as it doesn't have the expected caption annotation structure
+    if item == 'normal_trimmed':
+        print(f"Skipping {item} - different annotation structure")
+        continue
     
     for view in ['overhead', 'vehicle']:
         current_view = os.path.join(video_path, item, f'{view}_view')
@@ -24,7 +28,9 @@ for item in tqdm(os.listdir(video_path)):
 
         # vehicle bbox extraction
         if view == 'overhead':
-            assert os.path.exists(caption_anno_path)
+            if not os.path.exists(caption_anno_path):
+                print(f"Caption annotation not found: {caption_anno_path}")
+                continue
         try:
             vehicle_annotation = json.load(open(caption_anno_path))['event_phase']
         except:

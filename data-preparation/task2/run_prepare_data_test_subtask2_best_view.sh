@@ -28,9 +28,9 @@ PURPLE='\033[0;35m'
 CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}🚀 WTS Dataset SubTask2 VQA Test Processor - COMPREHENSIVE PROCESSING${NC}"
+echo -e "${BLUE}STARTING: WTS Dataset SubTask2 VQA Test Processor - COMPREHENSIVE PROCESSING${NC}"
 echo "=================================================================="
-echo -e "${YELLOW}📋 Configuration:${NC}"
+echo -e "${YELLOW}INFO: Configuration:${NC}"
 echo "  • Test videos: ${TEST_VIDEOS_DIR}"
 echo "  • Test bbox: ${TEST_BBOX_DIR}"  
 echo "  • VQA test file: ${VQA_TEST_FILE}"
@@ -38,7 +38,7 @@ echo "  • Output root: ${OUTPUT_ROOT}"
 echo "  • Output JSONL: ${OUTPUT_JSONL}"
 echo "  • Workers: ${NUM_WORKERS}"
 echo ""
-echo -e "${PURPLE}🎯 COMPREHENSIVE PROCESSING FEATURES:${NC}"
+echo -e "${PURPLE}TARGET: COMPREHENSIVE PROCESSING FEATURES:${NC}"
 echo "  • ENVIRONMENT QUESTIONS: Uses largest image + largest pedestrian bbox from all views"
 echo "  • EVENT PHASE QUESTIONS: Smart view ranking with bbox priority"
 echo "  • BBOX PRIORITY: Views with annotations get +10 priority points"
@@ -48,7 +48,7 @@ echo "  • NO RESIZE: Full images keep original resolution (no 896x896 resize)"
 echo "  • INTELLIGENT CROPPING: Only when bbox available, adaptive scaling"
 echo "  • METADATA TRACKING: Records selection reasoning and image types"
 echo ""
-echo -e "${CYAN}📊 Processing Logic:${NC}"
+echo -e "${CYAN}STATS: Processing Logic:${NC}"
 echo "  • ENVIRONMENT: Find largest image + largest pedestrian bbox from all views"
 echo "  • EVENT PHASES: Discover all available camera views for each phase"
 echo "  • PRIORITY CALC: bbox_priority(0/10) + view_type_priority(0-3)"
@@ -56,7 +56,7 @@ echo "  • VIEW SELECTION: Select view with highest combined priority score"
 echo "  • IMAGE EXTRACTION: Environment: largest + pedestrian bbox | Phase: crop + full OR 2 full"
 echo "  • METADATA: Include selection reasoning and image types in samples"
 echo ""
-echo -e "${YELLOW}📸 Output Format per Question:${NC}"
+echo -e "${YELLOW}SAVED: Output Format per Question:${NC}"
 echo "  • ENVIRONMENT: env_largest_{camera}_view1.jpg + env_pedestrian_{camera}_view2.jpg (2 images)"
 echo "  • EVENT PHASE WITH BBOX: best_view_{camera}_phase{N}_f{frame}_full.jpg + _crop.jpg"
 echo "  • EVENT PHASE WITHOUT BBOX: best_view_{camera}_phase{N}_f{frame}_view1.jpg + _view2.jpg"
@@ -64,27 +64,27 @@ echo "  • Environment: 2 images | Event phases: 2 images per sample"
 echo "=================================================================="
 
 # Validate input paths  
-echo -e "${BLUE}🔍 Validating input paths...${NC}"
+echo -e "${BLUE}SEARCHING: Validating input paths...${NC}"
 
 if [ ! -d "${TEST_VIDEOS_DIR}" ]; then
-    echo -e "${RED}❌ Test videos directory not found: ${TEST_VIDEOS_DIR}${NC}"
+    echo -e "${RED}ERROR: Test videos directory not found: ${TEST_VIDEOS_DIR}${NC}"
     exit 1
 fi
 
 if [ ! -d "${TEST_BBOX_DIR}" ]; then
-    echo -e "${RED}❌ Test bbox directory not found: ${TEST_BBOX_DIR}${NC}"
+    echo -e "${RED}ERROR: Test bbox directory not found: ${TEST_BBOX_DIR}${NC}"
     exit 1
 fi
 
 if [ ! -f "${VQA_TEST_FILE}" ]; then
-    echo -e "${RED}❌ VQA test file not found: ${VQA_TEST_FILE}${NC}"
+    echo -e "${RED}ERROR: VQA test file not found: ${VQA_TEST_FILE}${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}✅ All input paths validated${NC}"
+echo -e "${GREEN}SUCCESS: All input paths validated${NC}"
 
 # Check dataset structure
-echo -e "${BLUE}📊 Checking dataset structure...${NC}"
+echo -e "${BLUE}STATS: Checking dataset structure...${NC}"
 
 # Count normal_trimmed videos  
 NORMAL_COUNT=$(find "${TEST_VIDEOS_DIR}/videos/test/public/normal_trimmed" -name "*.mp4" 2>/dev/null | wc -l || echo 0)
@@ -107,7 +107,7 @@ VQA_ENTRIES=$(python -c "import json; data=json.load(open('${VQA_TEST_FILE}')); 
 echo "  • VQA test entries: ${VQA_ENTRIES}"
 
 # Show sample scenarios with comprehensive analysis
-echo -e "${BLUE}📊 Sample scenario analysis (environment + event phases):${NC}"
+echo -e "${BLUE}STATS: Sample scenario analysis (environment + event phases):${NC}"
 python -c "
 import json
 from pathlib import Path
@@ -123,7 +123,7 @@ env_only = sum(1 for s in data if s.get('conversations') and not s.get('event_ph
 phase_only = sum(1 for s in data if s.get('event_phase') and not s.get('conversations'))
 both = sum(1 for s in data if s.get('conversations') and s.get('event_phase'))
 
-print(f'  📊 Scenario Distribution:')
+print(f'  STATS: Scenario Distribution:')
 print(f'    • Environment-only scenarios: {env_only}')
 print(f'    • Event-phase-only scenarios: {phase_only}')  
 print(f'    • Both types: {both}')
@@ -141,7 +141,7 @@ if env_sample:
     i, scenario = env_sample
     video_file = scenario.get('videos', [''])[0]
     env_questions = len(scenario.get('conversations', []))
-    print(f'  🌍 Sample Environment Scenario {i}:')
+    print(f'  ENVIRONMENT: Sample Environment Scenario {i}:')
     print(f'    Video: {video_file}')
     print(f'    Environment questions: {env_questions}')
     print(f'    → Will use LARGEST image + LARGEST PEDESTRIAN BBOX from all available views')
@@ -158,7 +158,7 @@ if phase_sample:
     i, scenario = phase_sample
     video_file = scenario.get('videos', [''])[0]
     event_phases = scenario.get('event_phase', [])
-    print(f'  📋 Sample Event Phase Scenario {i}:')
+    print(f'  INFO: Sample Event Phase Scenario {i}:')
     print(f'    Video: {video_file}')
     print(f'    Event phases: {len(event_phases)}')
     
@@ -204,12 +204,12 @@ if phase_sample:
 echo ""
 
 # Create output directory
-echo -e "${BLUE}📁 Setting up output directory...${NC}"
+echo -e "${BLUE}FOLDER: Setting up output directory...${NC}"
 mkdir -p "${OUTPUT_ROOT}/images"
-echo -e "${GREEN}✅ Output directory created: ${OUTPUT_ROOT}${NC}"
+echo -e "${GREEN}SUCCESS: Output directory created: ${OUTPUT_ROOT}${NC}"
 
 # Run the processing script
-echo -e "${BLUE}🎬 Starting SubTask2 VQA test data processing (comprehensive processing)...${NC}"
+echo -e "${BLUE}PROCESSING: Starting SubTask2 VQA test data processing (comprehensive processing)...${NC}"
 echo "Start time: $(date)"
 
 python prepare_data_test_subtask2_best_view.py \
@@ -227,26 +227,26 @@ echo "End time: $(date)"
 
 # Check results
 if [ $EXIT_CODE -eq 0 ]; then
-    echo -e "${GREEN}🎉 Processing completed successfully!${NC}"
+    echo -e "${GREEN}COMPLETE: Processing completed successfully!${NC}"
     
     # Verify output
     if [ -f "${OUTPUT_JSONL}" ]; then
         SAMPLE_COUNT=$(wc -l < "${OUTPUT_JSONL}")
-        echo -e "${GREEN}✅ Output JSONL created with ${SAMPLE_COUNT} samples${NC}"
+        echo -e "${GREEN}SUCCESS: Output JSONL created with ${SAMPLE_COUNT} samples${NC}"
         
         # Count images
         IMAGE_COUNT=$(find "${OUTPUT_ROOT}/images" -name "*.jpg" 2>/dev/null | wc -l || echo 0)
-        echo -e "${GREEN}✅ Generated ${IMAGE_COUNT} processed images${NC}"
+        echo -e "${GREEN}SUCCESS: Generated ${IMAGE_COUNT} processed images${NC}"
         
         # Count different image types
         FULL_COUNT=$(find "${OUTPUT_ROOT}/images" -name "*_full.jpg" 2>/dev/null | wc -l || echo 0)
         CROP_COUNT=$(find "${OUTPUT_ROOT}/images" -name "*_crop.jpg" 2>/dev/null | wc -l || echo 0)
         VIEW_COUNT=$(find "${OUTPUT_ROOT}/images" -name "*_view*.jpg" 2>/dev/null | wc -l || echo 0)
         ENV_COUNT=$(find "${OUTPUT_ROOT}/images" \( -name "env_largest_*.jpg" -o -name "env_pedestrian_*.jpg" \) 2>/dev/null | wc -l || echo 0)
-        echo -e "${GREEN}✅ Generated ${FULL_COUNT} full images, ${CROP_COUNT} cropped images, ${VIEW_COUNT} multi-view images, ${ENV_COUNT} environment images${NC}"
+        echo -e "${GREEN}SUCCESS: Generated ${FULL_COUNT} full images, ${CROP_COUNT} cropped images, ${VIEW_COUNT} multi-view images, ${ENV_COUNT} environment images${NC}"
         
         # Analyze comprehensive selection results
-        echo -e "${BLUE}📊 Analyzing selection results (environment + event phases):${NC}"
+        echo -e "${BLUE}STATS: Analyzing selection results (environment + event phases):${NC}"
         python -c "
 import json
 from collections import Counter
@@ -332,11 +332,11 @@ if image_counts:
 "
         
         # Show sample directories
-        echo -e "${YELLOW}📂 Sample output directories:${NC}"
+        echo -e "${YELLOW}FOLDER: Sample output directories:${NC}"
         find "${OUTPUT_ROOT}/images" -maxdepth 2 -type d | head -5
         
         # Show sample images
-        echo -e "${YELLOW}📸 Sample images:${NC}"
+        echo -e "${YELLOW}SAVED: Sample images:${NC}"
         echo "  Environment images (largest):"
         find "${OUTPUT_ROOT}/images" -name "env_largest_*.jpg" | head -2
         echo "  Environment images (pedestrian):"
@@ -347,7 +347,7 @@ if image_counts:
         find "${OUTPUT_ROOT}/images" -name "best_view_*_crop.jpg" | head -2
         
         echo ""
-        echo -e "${BLUE}📋 Comprehensive Processing Summary:${NC}"
+        echo -e "${BLUE}INFO: Comprehensive Processing Summary:${NC}"
         echo "  • Total samples: ${SAMPLE_COUNT}"
         echo "  • Total images: ${IMAGE_COUNT}"
         echo "  • Environment images (largest + pedestrian): ${ENV_COUNT}"
@@ -378,13 +378,13 @@ print(f'Match: {expected_images == actual_images}')
 "
         
     else
-        echo -e "${RED}❌ Output JSONL file not created${NC}"
+        echo -e "${RED}ERROR: Output JSONL file not created${NC}"
         exit 1
     fi
 else
-    echo -e "${RED}❌ Processing failed with exit code ${EXIT_CODE}${NC}"
+    echo -e "${RED}ERROR: Processing failed with exit code ${EXIT_CODE}${NC}"
     exit $EXIT_CODE
 fi
 
-echo -e "${GREEN}🏁 SubTask2 VQA test data preparation (comprehensive processing) completed successfully!${NC}"
-echo -e "${CYAN}🎯 Comprehensive processing ensures optimal image selection for both environment and event phase questions!${NC}" 
+echo -e "${GREEN}FINISHED: SubTask2 VQA test data preparation (comprehensive processing) completed successfully!${NC}"
+echo -e "${CYAN}TARGET: Comprehensive processing ensures optimal image selection for both environment and event phase questions!${NC}" 

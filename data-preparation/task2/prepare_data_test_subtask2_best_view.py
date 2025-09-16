@@ -136,7 +136,7 @@ def resize_if_needed(image, max_size=896):
     h, w = image.shape[:2]
     if w > max_size or h > max_size:
         resized_image = cv2.resize(image, (max_size, max_size), interpolation=cv2.INTER_AREA)
-        print(f"      🔄 Resized from {w}x{h} to {max_size}x{max_size}")
+        print(f"      REFRESH: Resized from {w}x{h} to {max_size}x{max_size}")
         return resized_image
     return image
 
@@ -232,10 +232,10 @@ def extract_and_save_frame_best_view(video_path, frame_id, output_path, box_p=No
                 # Save cropped version if valid
                 if cropped_frame.size > 0 and cropped_frame.shape[0] > 10 and cropped_frame.shape[1] > 10:
                     cv2.imwrite(str(output_path), cropped_frame)
-                    print(f"      📸 Saved CROP {view_name}: ({cropped_frame.shape[1]}x{cropped_frame.shape[0]})")
+                    print(f"      Saved CROP {view_name}: ({cropped_frame.shape[1]}x{cropped_frame.shape[0]})")
                     return W, H, True  # Success with crop
                 else:
-                    print(f"      ⚠️  Invalid crop, saving full for {view_name}")
+                    print(f"      WARNING: Invalid crop, saving full for {view_name}")
                     # Save full frame without resize as fallback
                     cv2.imwrite(str(output_path), frame)
                     return W, H, False  # Success but no crop
@@ -243,11 +243,11 @@ def extract_and_save_frame_best_view(video_path, frame_id, output_path, box_p=No
         # Save full frame without resize
         cv2.imwrite(str(output_path), frame)
         crop_type = "CROP" if should_crop else "FULL"
-        print(f"      📸 Saved {crop_type} {view_name}: ({W}x{H})")
+        print(f"      Saved {crop_type} {view_name}: ({W}x{H})")
         return W, H, should_crop and has_bbox
         
     except Exception as e:
-        print(f"❌ Error extracting frame from {video_path}: {e}")
+        print(f"ERROR: Error extracting frame from {video_path}: {e}")
         return None, None, False
 
 def select_best_views_for_phase(phase_num, scenario_videos, video_base_dir, bbox_source_data, source, phase_data, original_scenario):
@@ -327,7 +327,7 @@ def select_best_views_for_phase(phase_num, scenario_videos, video_base_dir, bbox
                         })
                         
                 except Exception as e:
-                    print(f"      ⚠️  Failed to process external video {video_file}: {e}")
+                    print(f"      WARNING: Failed to process external video {video_file}: {e}")
                     continue
     
     else:
@@ -434,12 +434,12 @@ def select_best_views_for_phase(phase_num, scenario_videos, video_base_dir, bbox
         if views_with_bbox:
             # Use the best view with bbox - will generate crop + full
             best_view = views_with_bbox[0]
-            print(f"    🎯 Selected best view WITH BBOX: {best_view['camera_stem']} ({best_view['view_name']}) - Priority: {best_view['priority']}")
+            print(f"    Selected best view WITH BBOX: {best_view['camera_stem']} ({best_view['view_name']}) - Priority: {best_view['priority']}")
             return [best_view], True  # Return single view, has_bbox=True
         else:
             # No bbox available - select top 2 views for variety
             selected_views = candidate_views[:2]  # Take top 2
-            print(f"    🎯 Selected 2 best views WITHOUT BBOX:")
+            print(f"    Selected 2 best views WITHOUT BBOX:")
             for i, view in enumerate(selected_views):
                 print(f"      {i+1}. {view['camera_stem']} ({view['view_name']}) - Priority: {view['priority']}")
             return selected_views, False  # Return multiple views, has_bbox=False
@@ -468,9 +468,9 @@ def get_annotated_frame_for_phase(phase_num, camera_stem, bbox_data, source="mai
                 # Higher threshold for external data: 50x50 minimum and area > 3000
                 if width >= 50 and height >= 50 and area >= 3000:
                     ped_box = bbox
-                    print(f"      ✅ External bbox_annotated accepted for {camera_stem} phase {phase_num}: {width}x{height} (area: {area})")
+                    print(f"      External bbox_annotated accepted for {camera_stem} phase {phase_num}: {width}x{height} (area: {area})")
                 else:
-                    print(f"      ⚠️  External bbox_annotated rejected for {camera_stem} phase {phase_num}: {width}x{height} (area: {area}) - too small")
+                    print(f"      WARNING: External bbox_annotated rejected for {camera_stem} phase {phase_num}: {width}x{height} (area: {area}) - too small")
                     frame_id = None  # Reset to try generated data
             else:
                 frame_id = None  # No valid frame/bbox, try generated data
@@ -488,9 +488,9 @@ def get_annotated_frame_for_phase(phase_num, camera_stem, bbox_data, source="mai
                 # Higher threshold for external data: 50x50 minimum and area > 3000
                 if width >= 50 and height >= 50 and area >= 3000:
                     ped_box = bbox
-                    print(f"      ✅ External bbox_generated accepted for {camera_stem} phase {phase_num}: {width}x{height} (area: {area})")
+                    print(f"      External bbox_generated accepted for {camera_stem} phase {phase_num}: {width}x{height} (area: {area})")
                 else:
-                    print(f"      ⚠️  External bbox_generated rejected for {camera_stem} phase {phase_num}: {width}x{height} (area: {area}) - too small")
+                    print(f"      WARNING: External bbox_generated rejected for {camera_stem} phase {phase_num}: {width}x{height} (area: {area}) - too small")
                     frame_id = None  # Reset if bbox too small
             else:
                 frame_id = None  # No valid frame/bbox
@@ -639,26 +639,26 @@ def process_test_data_fast(test_videos_dir, test_bbox_dir, vqa_test_file, out_ro
     
     # Verify directories and files exist
     if not test_videos_dir.exists():
-        print(f"❌ Test videos directory not found: {test_videos_dir}")
+        print(f"ERROR: Test videos directory not found: {test_videos_dir}")
         return 0
     
     if not test_bbox_dir.exists():
-        print(f"❌ Test bbox directory not found: {test_bbox_dir}")
+        print(f"ERROR: Test bbox directory not found: {test_bbox_dir}")
         return 0
         
     if not vqa_test_file.exists():
-        print(f"❌ VQA test file not found: {vqa_test_file}")
+        print(f"ERROR: VQA test file not found: {vqa_test_file}")
         return 0
 
     # Load VQA test data
-    print(f"📂 Loading VQA test data from {vqa_test_file}")
+    print(f"Loading VQA test data from {vqa_test_file}")
     with open(vqa_test_file, 'r') as f:
         vqa_test_data = json.load(f)
     
-    print(f"🔍 Found {len(vqa_test_data)} test scenarios")
+    print(f"Found {len(vqa_test_data)} test scenarios")
 
     # Pre-load bbox data for fast lookups (same as original)
-    print(f"📦 Loading bbox data from {test_bbox_dir}")
+    print(f"Loading bbox data from {test_bbox_dir}")
     
     bbox_locations = [
         ("regular", Path("test") / "public"),
@@ -673,7 +673,7 @@ def process_test_data_fast(test_videos_dir, test_bbox_dir, vqa_test_file, out_ro
     }
     
     for location_name, path_suffix in bbox_locations:
-        print(f"📦 Loading bbox data from {location_name} scenarios...")
+        print(f"Loading bbox data from {location_name} scenarios...")
         
         for bbox_type, category in [("ped_anno", "pedestrian"), ("veh_anno", "vehicle"), 
                                    ("ped_gen", "pedestrian"), ("veh_gen", "vehicle")]:
@@ -688,14 +688,14 @@ def process_test_data_fast(test_videos_dir, test_bbox_dir, vqa_test_file, out_ro
                 bbox_source_data[bbox_type].update(location_data)
                 print(f"  • {bbox_type} from {location_name}: {len(location_data)} camera stems")
     
-    print(f"📊 Total bbox data loaded:")
+    print(f"Total bbox data loaded:")
     for bbox_type, data in bbox_source_data.items():
         print(f"  • {bbox_type}: {len(data)} camera stems")
     
     # Load external BDD_PC_5K bbox data from correct path
     external_bbox_dir = test_bbox_dir / "external" / "BDD_PC_5K"
     if external_bbox_dir.exists():
-        print(f"📦 Loading external BDD_PC_5K bbox data from {external_bbox_dir}")
+        print(f"Loading external BDD_PC_5K bbox data from {external_bbox_dir}")
         external_bbox_data = {
             'combined_anno': build_bbox_maps_fast(external_bbox_dir / "annotations" / "bbox_annotated" / "test" / "public", "test"),
             'combined_gen': build_bbox_maps_fast(external_bbox_dir / "annotations" / "bbox_generated" / "test" / "public", "test"),
@@ -703,7 +703,7 @@ def process_test_data_fast(test_videos_dir, test_bbox_dir, vqa_test_file, out_ro
         print(f"  • External combined_anno: {len(external_bbox_data['combined_anno'])} camera stems")
         print(f"  • External combined_gen: {len(external_bbox_data['combined_gen'])} camera stems")
     else:
-        print(f"⚠️  External bbox directory not found: {external_bbox_dir}")
+        print(f"WARNING: External bbox directory not found: {external_bbox_dir}")
         external_bbox_data = {'combined_anno': {}, 'combined_gen': {}}
 
     # Find video directories
@@ -711,7 +711,7 @@ def process_test_data_fast(test_videos_dir, test_bbox_dir, vqa_test_file, out_ro
     normal_trimmed_dir = test_public_dir / "normal_trimmed"
     external_videos_dir = test_videos_dir / "external"
     
-    print(f"🎬 Checking video directories:")
+    print(f"Checking video directories:")
     print(f"  • Normal trimmed: {normal_trimmed_dir} (exists: {normal_trimmed_dir.exists()})")
     print(f"  • External: {external_videos_dir} (exists: {external_videos_dir.exists()})")
 
@@ -725,7 +725,7 @@ def process_test_data_fast(test_videos_dir, test_bbox_dir, vqa_test_file, out_ro
         
         # Must have videos and either environment questions OR event phases (or both)
         if not scenario_videos or (not event_phases and not environment_conversations):
-            print(f"⚠️  Skipping incomplete VQA entry {i}: no videos or no questions")
+            print(f"WARNING: Skipping incomplete VQA entry {i}: no videos or no questions")
             continue
         
         # Determine source and video directory based on video file name
@@ -755,8 +755,8 @@ def process_test_data_fast(test_videos_dir, test_bbox_dir, vqa_test_file, out_ro
     both_count = sum(1 for i, vqa_entry, _, _, _, _ in all_tasks 
                     if vqa_entry.get("conversations") and vqa_entry.get("event_phase"))
     
-    print(f"🚀 Processing {len(all_tasks)} VQA test tasks with best view selection...")
-    print(f"   📊 Scenario breakdown:")
+    print(f"Processing {len(all_tasks)} VQA test tasks with best view selection...")
+    print(f"   Scenario breakdown:")
     print(f"      • Environment-only: {env_only_count} scenarios")
     print(f"      • Event-phase-only: {phase_only_count} scenarios") 
     print(f"      • Both types: {both_count} scenarios")
@@ -771,14 +771,14 @@ def process_test_data_fast(test_videos_dir, test_bbox_dir, vqa_test_file, out_ro
                 all_samples.extend(result)
     
     # Write results
-    print(f"📝 Writing {len(all_samples)} VQA test samples...")
+    print(f"Writing {len(all_samples)} VQA test samples...")
     Path(out_jsonl).parent.mkdir(parents=True, exist_ok=True)
     
     with open(out_jsonl, "w") as fout:
         for sample_data in all_samples:
             fout.write(json.dumps(sample_data, ensure_ascii=False) + "\n")
     
-    print(f"✅ Test processing complete: {len(all_samples)} VQA samples written to {out_jsonl}")
+    print(f"Test processing complete: {len(all_samples)} VQA samples written to {out_jsonl}")
     return len(all_samples)
 
 def find_pedestrian_bbox_for_view(view, bbox_source_data, source):
@@ -826,7 +826,7 @@ def find_pedestrian_bbox_for_view(view, bbox_source_data, source):
         return largest_area  # Return largest pedestrian bbox area found
         
     except Exception as e:
-        print(f"      ⚠️  Error finding pedestrian bbox for view: {e}")
+        print(f"      WARNING: Error finding pedestrian bbox for view: {e}")
         return 0
 
 def find_largest_pedestrian_bbox(scenario_videos, video_base_dir, bbox_source_data, source, original_scenario):
@@ -835,7 +835,7 @@ def find_largest_pedestrian_bbox(scenario_videos, video_base_dir, bbox_source_da
         largest_pedestrian = None
         largest_area = 0
         
-        print(f"      🔍 Searching through ALL frames for LARGEST pedestrian bbox...")
+        print(f"      Searching through ALL frames for LARGEST pedestrian bbox...")
         
         if source == "external":
             # External data: search through ONLY annotated bbox data (not generated)
@@ -848,7 +848,7 @@ def find_largest_pedestrian_bbox(scenario_videos, video_base_dir, bbox_source_da
                 if not video_path.exists():
                     continue
                 
-                print(f"        📹 Checking camera: {camera_stem}")
+                print(f"        Checking camera: {camera_stem}")
                 
                 # Check ONLY annotated data for environment questions
                 if camera_stem in combined_anno_data:
@@ -864,7 +864,7 @@ def find_largest_pedestrian_bbox(scenario_videos, video_base_dir, bbox_source_da
                                 # Check minimum size requirements
                                 if width >= 50 and height >= 50 and area >= 3000:
                                     if area > largest_area:
-                                        print(f"          🎯 NEW LARGEST: {area} pixels (was {largest_area})")
+                                        print(f"          NEW LARGEST: {area} pixels (was {largest_area})")
                                         largest_area = area
                                         largest_pedestrian = {
                                             'video_path': video_path,
@@ -878,9 +878,9 @@ def find_largest_pedestrian_bbox(scenario_videos, video_base_dir, bbox_source_da
                                             'image_size': None
                                         }
                                     else:
-                                        print(f"          ⚪ Smaller than current largest ({largest_area})")
+                                        print(f"          Smaller than current largest ({largest_area})")
                                 else:
-                                    print(f"          ❌ Too small (min: 50x50, 3000 area)")
+                                    print(f"          Too small (min: 50x50, 3000 area)")
         else:
             # WTS scenarios: search through ONLY annotated pedestrian data (not generated)
             ped_anno_data = bbox_source_data.get('ped_anno', {})
@@ -918,7 +918,7 @@ def find_largest_pedestrian_bbox(scenario_videos, video_base_dir, bbox_source_da
                     if not video_path.exists():
                         continue
                     
-                    print(f"        📹 Checking camera: {camera_stem} ({view_type})")
+                    print(f"        Checking camera: {camera_stem} ({view_type})")
                     
                     # Check ONLY annotated pedestrian data for environment questions
                     if camera_stem in ped_anno_data:
@@ -934,7 +934,7 @@ def find_largest_pedestrian_bbox(scenario_videos, video_base_dir, bbox_source_da
                                     # Check minimum size requirements
                                     if width >= 20 and height >= 20 and area >= 800:
                                         if area > largest_area:
-                                            print(f"          🎯 NEW LARGEST: {area} pixels (was {largest_area})")
+                                            print(f"          NEW LARGEST: {area} pixels (was {largest_area})")
                                             largest_area = area
                                             largest_pedestrian = {
                                                 'video_path': video_path,
@@ -948,9 +948,9 @@ def find_largest_pedestrian_bbox(scenario_videos, video_base_dir, bbox_source_da
                                                 'image_size': None
                                             }
                                         else:
-                                            print(f"          ⚪ Smaller than current largest ({largest_area})")
+                                            print(f"          Smaller than current largest ({largest_area})")
                                     else:
-                                        print(f"          ❌ Too small (min: 20x20, 800 area)")
+                                        print(f"          Too small (min: 20x20, 800 area)")
         
         if largest_pedestrian:
             # Get actual frame dimensions
@@ -962,24 +962,24 @@ def find_largest_pedestrian_bbox(scenario_videos, video_base_dir, bbox_source_da
                 largest_pedestrian['width'] = w
                 largest_pedestrian['height'] = h
                 largest_pedestrian['image_size'] = w * h
-                print(f"      ✅ Found largest ANNOTATED pedestrian: {largest_area} pixels ({largest_pedestrian['view_name']})")
+                print(f"      Found largest ANNOTATED pedestrian: {largest_area} pixels ({largest_pedestrian['view_name']})")
             except Exception as e:
-                print(f"      ⚠️  Error getting frame dimensions: {e}")
+                print(f"      WARNING: Error getting frame dimensions: {e}")
                 return None
         else:
-            print(f"      ❌ No pedestrian bbox found meeting minimum requirements")
+            print(f"      ERROR: No pedestrian bbox found meeting minimum requirements")
         
         return largest_pedestrian
         
     except Exception as e:
-        print(f"      ❌ Error finding largest pedestrian bbox: {e}")
+        print(f"      ERROR: Error finding largest pedestrian bbox: {e}")
         return None
 
 def process_environment_questions(scenario_id, vqa_entry, scenario_videos, video_base_dir, 
                                 out_root, bbox_source_data, source, original_scenario, environment_conversations):
     """Process environment questions using the largest image + largest pedestrian bbox from the scenario"""
     try:
-        print(f"    🔍 Finding largest image + largest pedestrian bbox for environment questions...")
+        print(f"    Finding largest image + largest pedestrian bbox for environment questions...")
         
         # Collect all available views and their image sizes
         candidate_views = []
@@ -1014,7 +1014,7 @@ def process_environment_questions(scenario_id, vqa_entry, scenario_videos, video
                         })
                         
                 except Exception as e:
-                    print(f"      ⚠️  Failed to process external video {video_file}: {e}")
+                    print(f"      WARNING: Failed to process external video {video_file}: {e}")
                     continue
         
         else:
@@ -1075,11 +1075,11 @@ def process_environment_questions(scenario_id, vqa_entry, scenario_videos, video
                             })
                             
                     except Exception as e:
-                        print(f"      ⚠️  Failed to process video {video_path}: {e}")
+                        print(f"      WARNING: Failed to process video {video_path}: {e}")
                         continue
         
         if not candidate_views:
-            print(f"    ❌ No valid views found for environment questions")
+            print(f"    ERROR: No valid views found for environment questions")
             return []
         
         # PRIORITIZE VEHICLE_VIEW FIRST for environment questions, then by bbox area and image size
@@ -1123,11 +1123,11 @@ def process_environment_questions(scenario_id, vqa_entry, scenario_videos, video
         if best_view:
             if best_view['view_name'] == "vehicle_view":
                 if best_view.get('pedestrian_bbox_area', 0) > 0:
-                    print(f"    🎯 Selected 1 VEHICLE_VIEW (prioritized) with LARGEST PEDESTRIAN BBOX:")
+                    print(f"    TARGET: Selected 1 VEHICLE_VIEW (prioritized) with LARGEST PEDESTRIAN BBOX:")
                 else:
-                    print(f"    🎯 Selected 1 VEHICLE_VIEW (prioritized for env_largest):")
+                    print(f"    TARGET: Selected 1 VEHICLE_VIEW (prioritized for env_largest):")
             else:
-                print(f"    🎯 Selected 1 largest image (no vehicle_view available):")
+                print(f"    TARGET: Selected 1 largest image (no vehicle_view available):")
         
         for i, view in enumerate(selected_views):
             bbox_info = f" (pedestrian bbox: {int(view.get('pedestrian_bbox_area', 0))} px²)" if view.get('pedestrian_bbox_area', 0) > 0 else ""
@@ -1135,14 +1135,14 @@ def process_environment_questions(scenario_id, vqa_entry, scenario_videos, video
             print(f"      {i+1}. {view['camera_stem']} ({view['view_name']}) - {view['width']}x{view['height']} (size: {view['image_size']}){bbox_info}{view_priority_info}")
         
         # Now find the largest pedestrian bbox across all views and frames (ANNOTATED DATA ONLY)
-        print(f"    🚶 Searching for largest ANNOTATED pedestrian bbox...")
+        print(f"    PEDESTRIAN: Searching for largest ANNOTATED pedestrian bbox...")
         largest_pedestrian_view = find_largest_pedestrian_bbox(scenario_videos, video_base_dir, bbox_source_data, source, original_scenario)
         
         if largest_pedestrian_view:
             # Add the pedestrian view if it's different from the largest view
             if largest_pedestrian_view not in selected_views:
                 selected_views.append(largest_pedestrian_view)
-                print(f"    ✅ Added largest pedestrian view:")
+                print(f"    SUCCESS: Added largest pedestrian view:")
                 pedestrian_view_priority = " [VEHICLE_VIEW PRIORITIZED]" if largest_pedestrian_view['view_name'] == "vehicle_view" else ""
                 print(f"      2. {largest_pedestrian_view['camera_stem']} ({largest_pedestrian_view['view_name']}) - Pedestrian bbox: {largest_pedestrian_view['pedestrian_bbox_area']}{pedestrian_view_priority}")
             else:
@@ -1171,9 +1171,9 @@ def process_environment_questions(scenario_id, vqa_entry, scenario_videos, video
             
             if W1 is not None:
                 environment_images.append(str(env_largest_output_path.resolve()))
-                print(f"      ✅ Extracted env_largest image: {W1}x{H1}")
+                print(f"      SUCCESS: Extracted env_largest image: {W1}x{H1}")
             else:
-                print(f"      ❌ Failed to extract env_largest image")
+                print(f"      ERROR: Failed to extract env_largest image")
         
         # Create env_pedestrian image (best view with largest bbox - crop image)
         if largest_pedestrian_view:
@@ -1195,12 +1195,12 @@ def process_environment_questions(scenario_id, vqa_entry, scenario_videos, video
             if W2 is not None:
                 environment_images.append(str(env_pedestrian_output_path.resolve()))
                 bbox_area = largest_pedestrian_view.get('pedestrian_bbox_area', 0)
-                print(f"      ✅ Extracted env_pedestrian image: {W2}x{H2} (pedestrian area: {bbox_area})")
+                print(f"      SUCCESS: Extracted env_pedestrian image: {W2}x{H2} (pedestrian area: {bbox_area})")
             else:
-                print(f"      ❌ Failed to extract env_pedestrian image")
+                print(f"      ERROR: Failed to extract env_pedestrian image")
         
         if not environment_images:
-            print(f"    ❌ No environment images extracted")
+            print(f"    ERROR: No environment images extracted")
             return []
         
         # Create system prompt for environment questions
@@ -1280,12 +1280,12 @@ Analysis Approach:
             }
             
             environment_samples.append(sample_data)
-            print(f"      ✅ Created environment question {i+1}/{len(environment_conversations)}")
+            print(f"      SUCCESS: Created environment question {i+1}/{len(environment_conversations)}")
         
         return environment_samples
         
     except Exception as e:
-        print(f"❌ Error processing environment questions for scenario {scenario_id}: {e}")
+        print(f"ERROR: Error processing environment questions for scenario {scenario_id}: {e}")
         import traceback
         traceback.print_exc()
         return []
@@ -1309,21 +1309,21 @@ def process_test_scenario_task(task_data):
         else:
             original_scenario = f"scenario_{scenario_id}"
         
-        print(f"🎬 Processing VQA test scenario {scenario_id} ({original_scenario}) with BEST VIEW selection")
-        print(f"  📊 Found {len(event_phases)} event phases and {len(environment_conversations)} environment questions")
+        print(f"PROCESSING: Processing VQA test scenario {scenario_id} ({original_scenario}) with BEST VIEW selection")
+        print(f"  STATS: Found {len(event_phases)} event phases and {len(environment_conversations)} environment questions")
         
         all_samples = []
         
         # First, process environment questions (use largest image + pedestrian bbox)
         if environment_conversations:
-            print(f"  🌍 Processing {len(environment_conversations)} environment questions with largest image + pedestrian bbox")
+            print(f"  ENVIRONMENT: Processing {len(environment_conversations)} environment questions with largest image + pedestrian bbox")
             environment_samples = process_environment_questions(
                 scenario_id, vqa_entry, scenario_videos, video_base_dir, 
                 out_root, bbox_source_data, source, original_scenario, environment_conversations
             )
             if environment_samples:
                 all_samples.extend(environment_samples)
-                print(f"    ✅ Created {len(environment_samples)} environment samples")
+                print(f"    SUCCESS: Created {len(environment_samples)} environment samples")
         
         # Then process each event phase with best view selection
         for phase_idx, phase_data in enumerate(event_phases):
@@ -1339,14 +1339,14 @@ def process_test_scenario_task(task_data):
                     break
             
             if phase_num is None:
-                print(f"    ⚠️  Unknown phase: {phase_name}")
+                print(f"    WARNING:  Unknown phase: {phase_name}")
                 continue
             
             if not conversations:
-                print(f"    ❌ No conversations found for phase {phase_num}")
+                print(f"    ERROR: No conversations found for phase {phase_num}")
                 continue
             
-            print(f"  📋 Processing Phase {phase_num} ({phase_name}) with {len(conversations)} questions")
+            print(f"  INFO: Processing Phase {phase_num} ({phase_name}) with {len(conversations)} questions")
             
             # Select the best views for this phase
             selected_views, has_bbox_data = select_best_views_for_phase(
@@ -1355,7 +1355,7 @@ def process_test_scenario_task(task_data):
             )
             
             if not selected_views:
-                print(f"    ❌ No suitable views found for phase {phase_num}")
+                print(f"    ERROR: No suitable views found for phase {phase_num}")
                 continue
             
             # Extract frames based on bbox availability
@@ -1404,10 +1404,10 @@ def process_test_scenario_task(task_data):
                     phase_images.append(str(crop_output_path.resolve()))
                 
                 if not phase_images:
-                    print(f"    ❌ Failed to extract images for phase {phase_num}")
+                    print(f"    ERROR: Failed to extract images for phase {phase_num}")
                     continue
                 
-                print(f"    ✅ Extracted BBOX view: FULL + CROP from {view['camera_stem']}")
+                print(f"    SUCCESS: Extracted BBOX view: FULL + CROP from {view['camera_stem']}")
                 
             else:
                 # Multiple views without bbox - generate 2 full versions (no resize, no crop)
@@ -1431,22 +1431,22 @@ def process_test_scenario_task(task_data):
                     )
                     
                     if W is None:
-                        print(f"    ❌ Failed to extract view {i+1} for phase {phase_num}")
+                        print(f"    ERROR: Failed to extract view {i+1} for phase {phase_num}")
                         continue
                     
                     # Add the image
                     phase_images.append(str(full_output_path.resolve()))
                     
-                print(f"    ✅ Extracted NO-BBOX views: 2 FULL versions from {len(selected_views)} cameras")
+                print(f"    SUCCESS: Extracted NO-BBOX views: 2 FULL versions from {len(selected_views)} cameras")
                 
             if len(phase_images) == 0:
-                print(f"    ❌ No images extracted for phase {phase_num}")
+                print(f"    ERROR: No images extracted for phase {phase_num}")
                 continue
             
             # Create system prompt for VQA task
             system_prompt = create_vqa_system_prompt(phase_name, PHASE_DESCRIPTIONS[phase_name])
             
-            print(f"    ✅ Best view(s) extracted with {len(conversations)} questions")
+            print(f"    SUCCESS: Best view(s) extracted with {len(conversations)} questions")
             
             # Create individual samples for each question (using extracted images)
             for i, conv in enumerate(conversations):
@@ -1510,12 +1510,12 @@ def process_test_scenario_task(task_data):
                 all_samples.append(sample_data)
                 
                 image_type_desc = "full + crop" if has_bbox_data else f"{len(phase_images)} full views"
-                print(f"      ✅ Created question {i+1}/{len(conversations)} with {image_type_desc}")
+                print(f"      SUCCESS: Created question {i+1}/{len(conversations)} with {image_type_desc}")
         
         return all_samples if all_samples else None
         
     except Exception as e:
-        print(f"❌ Error processing test scenario {scenario_id}: {e}")
+        print(f"ERROR: Error processing test scenario {scenario_id}: {e}")
         import traceback
         traceback.print_exc()
         return None
@@ -1524,15 +1524,15 @@ def build_bbox_maps_fast(bbox_root, split):
     """Build bbox mappings for fast lookup (same as original)"""
     bbox_root = Path(bbox_root)
     if not bbox_root.exists():
-        print(f"⚠️  Bbox directory not found: {bbox_root}")
+        print(f"WARNING:  Bbox directory not found: {bbox_root}")
         return {}
     
     json_files = list(bbox_root.rglob("*.json"))
     if not json_files:
-        print(f"⚠️  No JSON files found in: {bbox_root}")
+        print(f"WARNING:  No JSON files found in: {bbox_root}")
         return {}
     
-    print(f"📦 Loading {len(json_files)} bbox files from {bbox_root}")
+    print(f"LOADING: Loading {len(json_files)} bbox files from {bbox_root}")
     print(f"   Sample files: {[f.name for f in json_files[:5]]}")
     
     mp = {}
@@ -1583,20 +1583,20 @@ def main():
     pa.add_argument("--num_workers", type=int, default=32, help="Number of parallel workers (default: 32)")
     args = pa.parse_args()
 
-    print("🚀 WTS Dataset VQA Test Processor - SUBTASK 2 WITH BEST VIEW SELECTION")
+    print("STARTING: WTS Dataset VQA Test Processor - SUBTASK 2 WITH BEST VIEW SELECTION")
     print("="*70)
-    print("📋 Configuration:")
+    print("INFO: Configuration:")
     print(f"  • Test videos: {args.test_videos_dir}")
     print(f"  • Test bbox: {args.test_bbox_dir}")
     print(f"  • VQA test file: {args.vqa_test_file}")
     print(f"  • Output root: {args.out_root}")
     print(f"  • Output JSONL: {args.out_jsonl}")
     print(f"  • Parallel workers: {args.num_workers}")
-    print("📊 Data Sources:")
+    print("STATS: Data Sources:")
     print(f"  • Normal trimmed videos: videos/test/public/normal_trimmed/")
     print(f"  • External videos: external/")
     print(f"  • Test VQA questions: {Path(args.vqa_test_file).name}")
-    print("🎯 Features:")
+    print("TARGET: Features:")
     print(f"  • BEST VIEW SELECTION: Prioritizes views with bbox annotations for phase questions")
     print(f"  • ENVIRONMENT QUESTIONS: Uses 1 largest image from scenario for environment analysis")
     print(f"  • Dual output: Both full and cropped versions for phase questions with bbox")
@@ -1618,12 +1618,12 @@ def main():
     
     total_time = time.time() - overall_start
     
-    print(f"\n🎉 VQA TEST PROCESSING COMPLETE!")
-    print(f"📊 FINAL PERFORMANCE:")
+    print(f"\nCOMPLETE: VQA TEST PROCESSING COMPLETE!")
+    print(f"STATS: FINAL PERFORMANCE:")
     print(f"  • Total VQA test samples: {total_samples}")
     print(f"  • Total time: {total_time:.2f}s")
     print(f"  • Overall speed: {total_samples/total_time:.2f} samples/sec")
-    print(f"🔍 BEST VIEW TEST VQA DATASET CREATED: {args.out_jsonl}")
+    print(f"SEARCHING: BEST VIEW TEST VQA DATASET CREATED: {args.out_jsonl}")
 
 if __name__ == "__main__":
     main() 

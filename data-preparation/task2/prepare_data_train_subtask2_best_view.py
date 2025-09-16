@@ -216,9 +216,9 @@ def extract_and_save_frame_best_view(video_path, frame_id, output_path, box_p=No
                 if cropped_frame.size > 0 and cropped_frame.shape[0] > 10 and cropped_frame.shape[1] > 10:
                     cv2.imwrite(crop_output_path, cropped_frame)  # No resizing
                     saved_paths.append(str(Path(crop_output_path).resolve()))
-                    print(f"      📸 Saved cropped: {Path(crop_output_path).name} ({cropped_frame.shape[1]}x{cropped_frame.shape[0]})")
+                    print(f"      SAVED: Saved cropped: {Path(crop_output_path).name} ({cropped_frame.shape[1]}x{cropped_frame.shape[0]})")
                 else:
-                    print(f"      ⚠️  Invalid crop, will save only full frame")
+                    print(f"      WARNING:  Invalid crop, will save only full frame")
         
         # Strategy: Save FULL frame if conditions are met
         # - Always save full frame if it's requested (save_full_too=True)
@@ -226,14 +226,14 @@ def extract_and_save_frame_best_view(video_path, frame_id, output_path, box_p=No
         if save_full_too or not has_bbox:
             cv2.imwrite(str(output_path), frame)  # No resizing
             saved_paths.append(str(Path(output_path).resolve()))
-            print(f"      📸 Saved full: {Path(output_path).name} ({frame.shape[1]}x{frame.shape[0]})")
+            print(f"      SAVED: Saved full: {Path(output_path).name} ({frame.shape[1]}x{frame.shape[0]})")
         
         # Ensure we have max 2 images: [crop] or [full] or [crop, full] when both are needed
         if len(saved_paths) > 2:
-            print(f"      ⚠️  Too many images ({len(saved_paths)}), keeping first 2")
+            print(f"      WARNING:  Too many images ({len(saved_paths)}), keeping first 2")
             saved_paths = saved_paths[:2]
         
-        print(f"      ✅ Total images for this sample: {len(saved_paths)} (max 2)")
+        print(f"      SUCCESS: Total images for this sample: {len(saved_paths)} (max 2)")
         return W, H, saved_paths
         
     except Exception as e:
@@ -281,7 +281,7 @@ def select_best_view_for_phase(phase_num, view_files, videos_dir, bbox_data, sou
         # Sort by priority (highest first)
         candidate_views.sort(key=lambda x: x['priority'], reverse=True)
         best_view = candidate_views[0]
-        print(f"    🎯 Selected best view: {best_view['camera_stem']} ({best_view['view_name']}) - Priority: {best_view['priority']}")
+        print(f"    TARGET: Selected best view: {best_view['camera_stem']} ({best_view['view_name']}) - Priority: {best_view['priority']}")
         return best_view
     
     return None
@@ -326,7 +326,7 @@ def get_annotated_frame_for_phase(phase_num, camera_stem, bbox_data, source="mai
                 if frame_id is None:
                     frame_id = frame_id_veh
                 elif frame_id != frame_id_veh:
-                    print(f"    ⚠️  Frame ID mismatch for phase {phase_num} camera {camera_stem}: ped={frame_id}, veh={frame_id_veh}")
+                    print(f"    WARNING:  Frame ID mismatch for phase {phase_num} camera {camera_stem}: ped={frame_id}, veh={frame_id_veh}")
                     # Use pedestrian frame_id as primary
             
             if frame_id is not None:
@@ -426,7 +426,7 @@ def select_best_view_for_environment(view_files, videos_dir, bbox_data, source, 
                             'pedestrian_bbox_area': pedestrian_bbox_bonus * 1000 if pedestrian_bbox_bonus > 0 else 0
                         })
         except Exception as e:
-            print(f"    ⚠️  Error processing {view_name} for environment: {e}")
+            print(f"    WARNING:  Error processing {view_name} for environment: {e}")
             continue
     
     # Select the best view based on priority: VEHICLE_VIEW FIRST, then by priority and image size
@@ -447,7 +447,7 @@ def select_best_view_for_environment(view_files, videos_dir, bbox_data, source, 
         
         view_type_info = "VEHICLE_VIEW (prioritized)" if best_view['view_name'] == "vehicle_view" else f"{best_view['view_name'].upper()}"
         bbox_info = f" (pedestrian bbox: {int(best_view['pedestrian_bbox_area'])} px²)" if best_view['pedestrian_bbox_area'] > 0 else ""
-        print(f"    🎯 Selected best environment view: {best_view['camera_stem']} ({view_type_info}) - Priority: {best_view['priority']:.1f}{bbox_info}")
+        print(f"    TARGET: Selected best environment view: {best_view['camera_stem']} ({view_type_info}) - Priority: {best_view['priority']:.1f}{bbox_info}")
         return best_view
     
     return None
@@ -503,10 +503,10 @@ def find_best_environment_frame(video_path, camera_stem, bbox_data, source="main
                                 'phase_num': phase_num,
                                 'bbox_area': ped_area
                             }
-                            print(f"      🎯 Found larger pedestrian bbox: {ped_area} pixels in phase {phase_num} frame {frame_id}")
+                            print(f"      TARGET: Found larger pedestrian bbox: {ped_area} pixels in phase {phase_num} frame {frame_id}")
             
             if best_frame:
-                print(f"      ✅ Selected frame with LARGEST pedestrian bbox: {largest_ped_area} pixels")
+                print(f"      SUCCESS: Selected frame with LARGEST pedestrian bbox: {largest_ped_area} pixels")
                 return best_frame
                 
         else:
@@ -561,10 +561,10 @@ def find_best_environment_frame(video_path, camera_stem, bbox_data, source="main
                                 'phase_num': phase_num,
                                 'bbox_area': ped_area
                             }
-                            print(f"      🎯 Found larger pedestrian bbox: {ped_area} pixels in phase {phase_num} frame {frame_id}")
+                            print(f"      TARGET: Found larger pedestrian bbox: {ped_area} pixels in phase {phase_num} frame {frame_id}")
             
             if best_frame:
-                print(f"      ✅ Selected frame with LARGEST pedestrian bbox: {largest_ped_area} pixels")
+                print(f"      SUCCESS: Selected frame with LARGEST pedestrian bbox: {largest_ped_area} pixels")
                 return best_frame
         
         # No annotated frames available, pick a good frame from the middle of the video
@@ -590,7 +590,7 @@ def find_best_environment_frame(video_path, camera_stem, bbox_data, source="main
         }
         
     except Exception as e:
-        print(f"    ⚠️  Error finding best environment frame for {camera_stem}: {e}")
+        print(f"    WARNING:  Error finding best environment frame for {camera_stem}: {e}")
         return None
 
 def load_environment_questions(scenario_dir, scenario, source="main"):
@@ -622,11 +622,11 @@ def load_environment_questions(scenario_dir, scenario, source="main"):
         if not env_questions:
             return None
         
-        print(f"    📋 Loaded {len(env_questions)} environment questions for {scenario}")
+        print(f"    INFO: Loaded {len(env_questions)} environment questions for {scenario}")
         return env_questions
         
     except Exception as e:
-        print(f"    ⚠️  Failed to load environment questions for {scenario}: {e}")
+        print(f"    WARNING:  Failed to load environment questions for {scenario}: {e}")
         return None
 
 def create_environment_system_prompt():
@@ -737,13 +737,13 @@ def process_split_fast(data_root, out_root, out_jsonl, split, num_workers=32):
 
     # Verify directories
     if not vqa_dir.exists() or not videos_dir.exists():
-        print(f"❌ Required directories missing for {split}")
+        print(f"ERROR: Required directories missing for {split}")
         print(f"   VQA dir: {vqa_dir} (exists: {vqa_dir.exists()})")
         print(f"   Videos dir: {videos_dir} (exists: {videos_dir.exists()})")
         return 0
 
     # Pre-load all bbox annotation data (same as subtask 1)
-    print(f"📦 Pre-loading {split} bbox annotation data...")
+    print(f"LOADING: Pre-loading {split} bbox annotation data...")
     start_time = time.time()
     
     bbox_data = {
@@ -756,7 +756,7 @@ def process_split_fast(data_root, out_root, out_jsonl, split, num_workers=32):
     # Load external BDD_PC_5K annotations if available
     external_bbox_data = {}
     if external_bdd_dir.exists():
-        print(f"📦 Loading external BDD_PC_5K bbox annotations for {split}...")
+        print(f"LOADING: Loading external BDD_PC_5K bbox annotations for {split}...")
         external_annotations = external_bdd_dir / "annotations"
         if external_annotations.exists():
             external_bbox_data = {
@@ -765,7 +765,7 @@ def process_split_fast(data_root, out_root, out_jsonl, split, num_workers=32):
             }
     
     load_time = time.time() - start_time
-    print(f"⚡ {split} bbox data loaded in {load_time:.2f}s")
+    print(f"FAST: {split} bbox data loaded in {load_time:.2f}s")
 
     # Find all VQA files
     vqa_paths = list(vqa_dir.rglob("*.json"))
@@ -779,20 +779,20 @@ def process_split_fast(data_root, out_root, out_jsonl, split, num_workers=32):
     external_vqa_paths = []
     if external_bdd_dir.exists():
         external_vqa_dir = external_bdd_dir / "annotations" / "vqa" / split
-        print(f"🔍 Checking external VQA dir: {external_vqa_dir}")
+        print(f"SEARCHING: Checking external VQA dir: {external_vqa_dir}")
         if external_vqa_dir.exists():
             external_vqa_paths = list(external_vqa_dir.rglob("*.json"))
-            print(f"🔍 Found {len(external_vqa_paths)} external VQA files")
+            print(f"SEARCHING: Found {len(external_vqa_paths)} external VQA files")
         else:
-            print(f"⚠️  External VQA directory not found: {external_vqa_dir}")
+            print(f"WARNING:  External VQA directory not found: {external_vqa_dir}")
     else:
-        print(f"⚠️  External BDD directory not found: {external_bdd_dir}")
+        print(f"WARNING:  External BDD directory not found: {external_bdd_dir}")
 
     all_vqa_paths = vqa_paths + external_vqa_paths
-    print(f"🔍 Total VQA files found: {len(vqa_paths)} main + {len(external_vqa_paths)} external = {len(all_vqa_paths)} for {split}")
+    print(f"SEARCHING: Total VQA files found: {len(vqa_paths)} main + {len(external_vqa_paths)} external = {len(all_vqa_paths)} for {split}")
 
     if len(all_vqa_paths) == 0:
-        print(f"❌ No VQA files found for {split}")
+        print(f"ERROR: No VQA files found for {split}")
         return 0
 
     # Group VQA files by scenario
@@ -819,7 +819,7 @@ def process_split_fast(data_root, out_root, out_jsonl, split, num_workers=32):
         if view_name not in external_scenarios[scenario]:
             external_scenarios[scenario][view_name] = vqa_fp
     
-    print(f"🗂️ Found {len(scenarios)} main + {len(external_scenarios)} external scenarios for {split}")
+    print(f"FILES: Found {len(scenarios)} main + {len(external_scenarios)} external scenarios for {split}")
 
     # Prepare tasks
     main_tasks = [
@@ -834,7 +834,7 @@ def process_split_fast(data_root, out_root, out_jsonl, split, num_workers=32):
     
     all_tasks = main_tasks + external_tasks
     
-    print(f"🚀 Processing {len(all_tasks)} VQA best view tasks...")
+    print(f"STARTING: Processing {len(all_tasks)} VQA best view tasks...")
     all_samples = []
     
     with Pool(num_workers) as pool:
@@ -846,14 +846,14 @@ def process_split_fast(data_root, out_root, out_jsonl, split, num_workers=32):
                 all_samples.extend(result)
     
     # Write results
-    print(f"📝 Writing {len(all_samples)} VQA best view samples...")
+    print(f"WRITING: Writing {len(all_samples)} VQA best view samples...")
     Path(out_jsonl).parent.mkdir(parents=True, exist_ok=True)
     
     with open(out_jsonl, "w") as fout:
         for sample_data in all_samples:
             fout.write(json.dumps(sample_data, ensure_ascii=False) + "\n")
     
-    print(f"✅ {split} complete: {len(all_samples)} VQA best view samples written to {out_jsonl}")
+    print(f"SUCCESS: {split} complete: {len(all_samples)} VQA best view samples written to {out_jsonl}")
     return len(all_samples)
 
 def process_scenario_task(task_data):
@@ -861,7 +861,7 @@ def process_scenario_task(task_data):
     scenario, view_files, data_root, out_root, split, bbox_data, task_id, source = task_data
     
     try:
-        print(f"🎬 Processing VQA best view {source} scenario {scenario} with views: {list(view_files.keys())}")
+        print(f"PROCESSING: Processing VQA best view {source} scenario {scenario} with views: {list(view_files.keys())}")
         
         # Load VQA data for all views
         view_vqa_data = {}
@@ -883,7 +883,7 @@ def process_scenario_task(task_data):
             # Validate phases
             phases = vqa_data.get("event_phase", [])
             if len(phases) != 5:
-                print(f"❌ Expected 5 phases, got {len(phases)} for {scenario}/{view_name}")
+                print(f"ERROR: Expected 5 phases, got {len(phases)} for {scenario}/{view_name}")
                 continue
                 
             # Build phase mapping
@@ -897,14 +897,14 @@ def process_scenario_task(task_data):
                         phases_by_label[i] = phase
             
             if len(phases_by_label) != 5:
-                print(f"    ⚠️  Phase mapping issue for {scenario}/{view_name}")
+                print(f"    WARNING:  Phase mapping issue for {scenario}/{view_name}")
                 print(f"      Expected 5 phases, got {len(phases_by_label)}: {list(phases_by_label.keys())}")
                 # Continue processing with available phases
             
             view_vqa_data[view_name] = phases_by_label
         
         if not view_vqa_data:
-            print(f"❌ No valid VQA data for scenario {scenario}")
+            print(f"ERROR: No valid VQA data for scenario {scenario}")
             return None
         
         # Setup paths based on source
@@ -930,13 +930,13 @@ def process_scenario_task(task_data):
             first_view_data = view_vqa_data[list(view_vqa_data.keys())[0]]
             actual_phase_name = first_view_data[phase_num].get("labels", ["unknown"])[0]
             
-            print(f"  🎯 Processing Best View Phase {phase_num}: {actual_phase_name}")
+            print(f"  TARGET: Processing Best View Phase {phase_num}: {actual_phase_name}")
             
             # Select the best view for this phase
             best_view = select_best_view_for_phase(phase_num, view_files, videos_dir, bbox_data, source, scenario)
             
             if not best_view:
-                print(f"    ❌ No suitable view found for phase {phase_num}")
+                print(f"    ERROR: No suitable view found for phase {phase_num}")
                 continue
             
             # Get conversations from the best view's VQA data
@@ -944,7 +944,7 @@ def process_scenario_task(task_data):
             phase_conversations = best_view_vqa[phase_num].get("conversations", [])
             
             if not phase_conversations:
-                print(f"    ❌ No conversations found for phase {phase_num}")
+                print(f"    ERROR: No conversations found for phase {phase_num}")
                 continue
             
             # Extract frame from best view
@@ -968,7 +968,7 @@ def process_scenario_task(task_data):
             )
             
             if W is None or not saved_paths:
-                print(f"    ❌ Failed to extract frame for best view")
+                print(f"    ERROR: Failed to extract frame for best view")
                 continue
             
             # Create enhanced system prompt for VQA task
@@ -980,7 +980,7 @@ def process_scenario_task(task_data):
                 
                 # Skip if we couldn't get a proper answer
                 if not correct_answer:
-                    print(f"      ⚠️  Skipping question {i+1} - no valid answer")
+                    print(f"      WARNING:  Skipping question {i+1} - no valid answer")
                     continue
                 
                 # Create image blocks based on available images (crop + full or just full)
@@ -1007,10 +1007,10 @@ def process_scenario_task(task_data):
                 
                 all_samples.append(sample_data)
                 
-                print(f"      ✅ Created best view VQA sample {i+1}/{len(phase_conversations)} for Phase {phase_num} with {len(saved_paths)} images from {best_view['camera_stem']}")
+                print(f"      SUCCESS: Created best view VQA sample {i+1}/{len(phase_conversations)} for Phase {phase_num} with {len(saved_paths)} images from {best_view['camera_stem']}")
         
         # PROCESS ENVIRONMENT QUESTIONS
-        print(f"  🌍 Processing Environment Questions for {scenario}")
+        print(f"  ENVIRONMENT: Processing Environment Questions for {scenario}")
         
         # Load environment questions
         if source == "external":
@@ -1140,7 +1140,7 @@ def process_scenario_task(task_data):
                         
                         # Skip if we couldn't get a proper answer
                         if not correct_answer:
-                            print(f"      ⚠️  Skipping environment question {i+1} - no valid answer")
+                            print(f"      WARNING:  Skipping environment question {i+1} - no valid answer")
                             continue
                         
                         # Create image blocks based on available images (env_largest + env_pedestrian crop)
@@ -1167,11 +1167,11 @@ def process_scenario_task(task_data):
                         
                         all_samples.append(sample_data)
                         
-                        print(f"      ✅ Created environment VQA sample {i+1}/{len(environment_questions)} with {len(all_env_images)} images (env_largest: {env_best_view['view_name']}, env_pedestrian: {largest_pedestrian_view['view_name'] if largest_pedestrian_view else 'same'})")
+                        print(f"      SUCCESS: Created environment VQA sample {i+1}/{len(environment_questions)} with {len(all_env_images)} images (env_largest: {env_best_view['view_name']}, env_pedestrian: {largest_pedestrian_view['view_name'] if largest_pedestrian_view else 'same'})")
                 else:
-                    print(f"    ❌ Failed to extract environment frame from best view")
+                    print(f"    ERROR: Failed to extract environment frame from best view")
             else:
-                print(f"    ❌ No suitable view found for environment questions")
+                print(f"    ERROR: No suitable view found for environment questions")
         else:
             print(f"    ℹ️  No environment questions found for scenario {scenario}")
         
@@ -1179,7 +1179,7 @@ def process_scenario_task(task_data):
         return all_samples if all_samples else None
         
     except Exception as e:
-        print(f"❌ Error processing scenario {scenario}: {e}")
+        print(f"ERROR: Error processing scenario {scenario}: {e}")
         import traceback
         traceback.print_exc()
         return None
@@ -1188,14 +1188,14 @@ def build_bbox_maps_fast(bbox_root, split):
     """Build bbox mappings for fast lookup (same as subtask 1)"""
     bbox_root = Path(bbox_root)
     if not bbox_root.exists():
-        print(f"⚠️  Bbox directory not found: {bbox_root}")
+        print(f"WARNING:  Bbox directory not found: {bbox_root}")
         return {}
     
     json_files = list(bbox_root.rglob("*.json"))
     if not json_files:
         return {}
     
-    print(f"📦 Loading {len(json_files)} bbox files from {bbox_root}")
+    print(f"LOADING: Loading {len(json_files)} bbox files from {bbox_root}")
     
     mp = {}
     with Pool(min(16, len(json_files))) as pool:
@@ -1282,11 +1282,11 @@ def find_largest_pedestrian_bbox_across_views(view_files, videos_dir, bbox_data,
                                     'pedestrian_bbox_area': bbox_area
                                 }
         except Exception as e:
-            print(f"    ⚠️  Error processing {view_name} for largest pedestrian search: {e}")
+            print(f"    WARNING:  Error processing {view_name} for largest pedestrian search: {e}")
             continue
     
     if largest_view:
-        print(f"    🚶 Found largest pedestrian bbox: {largest_area} pixels in {largest_view['view_name']}")
+        print(f"    PEDESTRIAN: Found largest pedestrian bbox: {largest_area} pixels in {largest_view['view_name']}")
     
     return largest_view
 
@@ -1300,21 +1300,21 @@ def main():
     pa.add_argument("--merge_splits", action="store_true", help="Merge train and val splits into a single training dataset")
     args = pa.parse_args()
 
-    print("🚀 WTS Dataset VQA Best View Processor - SUBTASK 2 BEST VIEW + ENVIRONMENT")
+    print("STARTING: WTS Dataset VQA Best View Processor - SUBTASK 2 BEST VIEW + ENVIRONMENT")
     print("="*70)
-    print("📋 Configuration:")
+    print("INFO: Configuration:")
     print(f"  • Data root: {args.data_root}")
     print(f"  • Output root: {args.out_root}")
     print(f"  • Output JSONL: {args.out_jsonl}")
     print(f"  • Split: {args.split}")
     print(f"  • Parallel workers: {args.num_workers}")
     print(f"  • Merge splits: {args.merge_splits}")
-    print("📊 Data Sources:")
+    print("STATS: Data Sources:")
     print(f"  • Main WTS VQA: annotations/vqa/{args.split if args.split != 'both' else '{train,val}'}/")
     print(f"  • Normal trimmed VQA: annotations/vqa/{args.split if args.split != 'both' else '{train,val}'}/normal_trimmed/")
     print(f"  • External BDD_PC_5K VQA: external/BDD_PC_5K/annotations/vqa/")
     print(f"  • Environment questions: annotations/vqa/{args.split if args.split != 'both' else '{train,val}'}/*/environment/")
-    print("🎯 Features:")
+    print("TARGET: Features:")
     print(f"  • Best view selection based on bbox availability and view priority")
     print(f"  • Phase-based questions: Select best view per phase (0-4)")
     print(f"  • Environment questions: Prioritize vehicle view + largest images, avoid frame 0")
@@ -1330,12 +1330,12 @@ def main():
     if args.split == "both":
         if args.merge_splits:
             # Merge train and val into a single dataset
-            print("🔀 MERGING train and val splits into single VQA best view training dataset")
+            print("MERGE: MERGING train and val splits into single VQA best view training dataset")
             
             all_merged_samples = []
             
             for split in ["train", "val"]:
-                print(f"\n📂 Processing {split} split for VQA best view merging...")
+                print(f"\nFOLDER: Processing {split} split for VQA best view merging...")
                 
                 # Create temporary output for this split
                 temp_jsonl = args.out_jsonl.replace(".jsonl", f"_temp_{split}.jsonl")
@@ -1351,10 +1351,10 @@ def main():
                     # Remove temporary file
                     Path(temp_jsonl).unlink()
                 
-                print(f"✅ {split} complete: {split_samples} samples")
+                print(f"SUCCESS: {split} complete: {split_samples} samples")
             
             # Write merged results
-            print(f"📝 Writing {len(all_merged_samples)} merged VQA best view samples...")
+            print(f"WRITING: Writing {len(all_merged_samples)} merged VQA best view samples...")
             Path(args.out_jsonl).parent.mkdir(parents=True, exist_ok=True)  
             
             with open(args.out_jsonl, "w") as fout:
@@ -1374,13 +1374,13 @@ def main():
     
     total_time = time.time() - overall_start
     
-    print(f"\n🎉 VQA BEST VIEW + ENVIRONMENT PROCESSING COMPLETE!")
-    print(f"📊 FINAL PERFORMANCE:")
+    print(f"\nCOMPLETE: VQA BEST VIEW + ENVIRONMENT PROCESSING COMPLETE!")
+    print(f"STATS: FINAL PERFORMANCE:")
     print(f"  • Total VQA samples (phases + environment): {total_samples}")
     print(f"  • Total time: {total_time:.2f}s")
     print(f"  • Overall speed: {total_samples/total_time:.2f} samples/sec")
     if args.merge_splits:
-        print(f"🔀 MERGED VQA BEST VIEW + ENVIRONMENT TRAINING DATASET CREATED: {args.out_jsonl}")
+        print(f"MERGE: MERGED VQA BEST VIEW + ENVIRONMENT TRAINING DATASET CREATED: {args.out_jsonl}")
 
 if __name__ == "__main__":
     main() 

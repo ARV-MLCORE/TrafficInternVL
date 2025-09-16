@@ -1,4 +1,4 @@
-#!/home/deepzoom/arv-aicity2-data/final_repo_for_github/models-training/llama-factory-env/bin/python3.12
+#!/home/deepzoom/TrafficInternVL/models-training/llama-factory-env/bin/python3
 __author__ = 'jszheng'
 import optparse
 import sys

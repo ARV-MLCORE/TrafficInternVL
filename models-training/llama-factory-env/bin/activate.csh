@@ -9,7 +9,7 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
-setenv VIRTUAL_ENV /home/deepzoom/arv-aicity2-data/final_repo_for_github/models-training/llama-factory-env
+setenv VIRTUAL_ENV /home/deepzoom/TrafficInternVL/models-training/llama-factory-env
 
 set _OLD_VIRTUAL_PATH="$PATH"
 setenv PATH "$VIRTUAL_ENV/"bin":$PATH"

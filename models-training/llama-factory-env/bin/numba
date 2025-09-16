@@ -1,4 +1,4 @@
-#!/home/deepzoom/arv-aicity2-data/final_repo_for_github/models-training/llama-factory-env/bin/python3.12
+#!/home/deepzoom/TrafficInternVL/models-training/llama-factory-env/bin/python3
 # -*- coding: UTF-8 -*-
 from __future__ import print_function, division, absolute_import
 

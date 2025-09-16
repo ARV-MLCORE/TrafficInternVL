@@ -2,7 +2,7 @@
 
 num_worker=32
 root="/home/deepzoom/arv-aicity2-data/Park/AICITY2024_Track2_AliOpenTrek_CityLLaVA/data_preprocess/data/"
-save_folder="/home/deepzoom/arv-aicity2-data/final_repo_for_github/data/processed_anno/" # Store json files 
+save_folder="/home/deepzoom/TrafficInternVL/data-preparation/task1/processed_anno" # Store json files 
 splits=("train" "val")
 scale=1.5
 
@@ -23,9 +23,9 @@ for file in "$save_folder/frame_bbox_anno"/*val*; do
 done
 
 for split in "${splits[@]}"; do
-    python3 transform_llava_format.py \
+    python3 transform_format.py \
         --root $root \
-        --save-folder $save_folder/llava_format \
+        --save-folder $save_folder/internvl_format \
         --split $split \
         --wts-global-image-path $root/WTS/bbox_local \
         --bdd-global-image-path $root/BDD_PC_5k/bbox_local \

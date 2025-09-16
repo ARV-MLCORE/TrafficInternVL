@@ -39,10 +39,10 @@ deactivate nondestructive
 if [ "${OSTYPE:-}" = "cygwin" ] || [ "${OSTYPE:-}" = "msys" ] ; then
     # transform D:\path\to\venv to /d/path/to/venv on MSYS
     # and to /cygdrive/d/path/to/venv on Cygwin
-    export VIRTUAL_ENV=$(cygpath /home/deepzoom/arv-aicity2-data/final_repo_for_github/models-training/llama-factory-env)
+    export VIRTUAL_ENV=$(cygpath /home/deepzoom/TrafficInternVL/models-training/llama-factory-env)
 else
     # use the path as-is
-    export VIRTUAL_ENV=/home/deepzoom/arv-aicity2-data/final_repo_for_github/models-training/llama-factory-env
+    export VIRTUAL_ENV=/home/deepzoom/TrafficInternVL/models-training/llama-factory-env
 fi
 
 _OLD_VIRTUAL_PATH="$PATH"

@@ -33,7 +33,7 @@ end
 # Unset irrelevant variables.
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV /home/deepzoom/arv-aicity2-data/final_repo_for_github/models-training/llama-factory-env
+set -gx VIRTUAL_ENV /home/deepzoom/TrafficInternVL/models-training/llama-factory-env
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/"bin $PATH

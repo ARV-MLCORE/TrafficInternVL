@@ -207,3 +207,4 @@ marimo/_lsp/
 __marimo__/
 data-preparation/task1/data/test_part/
 data-preparation/task1/data/generate_test_frames/
+models-training/model

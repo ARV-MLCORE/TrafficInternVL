@@ -1,8 +1,27 @@
-# TrafficInternVL — Quick Start
+# TrafficInternVL: Spatially-Guided Fine-Tuning with Caption Refinement for Fine-Grained Traffic Safety Captioning and Visual Question Answering
 
-🏆 4th Place in AI City Challenge 2025 Track 2
+**📄 Paper Accepted at ICCV 2025 Workshop**
+
+**Authors:** Sasin Phimsiri¹*†, Sarut Sunpawatr¹*, Riu Cherdchusakulchai²*, Pornprom Kiawjak³*, Teepakorn Tosawadi¹*, Suchat Tungjitnob¹‡, Visarut Trairattanapa¹‡, Supawit Vatathanavaro¹‡, Wasu Kudisthalert¹‡, Chaitat Utintu¹, Worawit Saetan¹, Nathamon Kongsawat¹, Phawat Borisuitsawat¹, Kasisdis Mahakijdechachai¹, Nitipan Su-Inn¹, Ek Thamwiwatthana¹§, Vasin Suttichaya⁴§
+
+**Affiliations:**
+- ¹AI and Robotics Ventures
+- ²Carnegie Mellon University  
+- ³King Mongkut's Institute of Technology Ladkrabang
+- ⁴Mahidol University
+
+*These authors contributed equally  
+†Corresponding Author: sasinp@arv.co.th | sasin.phimsiri@gmail.com  
+‡Co-Author  
+§Senior Author
+
+🏆 **4th Place in AI City Challenge 2025 Track 2**
 
 TrafficInternVL provides a complete pipeline for traffic scene understanding: data prep (caption + VQA), training, export, and inference.
+
+## Architecture
+
+![TrafficInternVL Architecture](assets/TrafficInternVL_architecture.png)
 
 ## Requirements
 - Conda environment with Python 3.10 (recommended)
@@ -60,7 +79,7 @@ pip install -r requirements.txt
 ```
 
 ## 2) Data Download & Paths
-- Download WTS dataset: [WTS: Woven Traffic Safety Dataset](https://woven-visionai.github.io/wts-dataset-homepage/)
+- Download WTS dataset: <a href="https://woven-visionai.github.io/wts-dataset-homepage/" target="_blank" rel="noopener noreferrer">WTS: Woven Traffic Safety Dataset</a>
 - Place datasets under:
   - `data-preparation/task1/data/`
 - Update paths in scripts to your local project path:
@@ -92,7 +111,7 @@ cd data-preparation/task1
 ./prepare_data_test.sh
 ```
 
-## 4) Task 2 — VQA (Best View) Data
+## 4) Task 2 — VQA Data
 - Prerequisite: Task 1 data present in `data-preparation/task1/data/`
 - Training split:
 ```bash
@@ -186,5 +205,5 @@ cd models-training
 - Terminal: use `bash` (not `sh`) for colored output and echo formatting.
 
 ## Reference
-- CityLLaVA: Efficient Fine-Tuning for VLMs in City Scenario — [Paper (arXiv:2405.03194)](https://doi.org/10.48550/arXiv.2405.03194) · [Code (AliOpenTrek CityLLaVA)](https://github.com/alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA)
-- LLaMA-Factory — Unified Efficient Fine-Tuning of 100+ LLMs & VLMs: [GitHub](https://github.com/hiyouga/LLaMA-Factory)
+- CityLLaVA: Efficient Fine-Tuning for VLMs in City Scenario — <a href="https://doi.org/10.48550/arXiv.2405.03194" target="_blank" rel="noopener noreferrer">Paper (arXiv:2405.03194)</a> · <a href="https://github.com/alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA" target="_blank" rel="noopener noreferrer">Code (AliOpenTrek CityLLaVA)</a>
+- LLaMA-Factory — Unified Efficient Fine-Tuning of 100+ LLMs & VLMs: <a href="https://github.com/hiyouga/LLaMA-Factory" target="_blank" rel="noopener noreferrer">GitHub</a>

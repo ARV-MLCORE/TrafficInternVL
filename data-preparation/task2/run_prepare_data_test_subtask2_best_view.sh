@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # run_prepare_data_test_subtask2_best_view.sh - COMPREHENSIVE PROCESSING VERSION  
 # Script to run SubTask2 VQA test data preparation with intelligent image selection
 # KEY FEATURES:
@@ -11,11 +11,12 @@
 set -e  # Exit on any error
 
 # Configuration
-WORKSPACE_ROOT="/workspace"
-TEST_VIDEOS_DIR="${WORKSPACE_ROOT}/datasets/SubTask1-Caption/WTS_DATASET_PUBLIC_TEST"
-TEST_BBOX_DIR="${WORKSPACE_ROOT}/datasets/SubTask1-Caption/WTS_DATASET_PUBLIC_TEST_BBOX"
-VQA_TEST_FILE="${WORKSPACE_ROOT}/datasets/SubTask2-VQA/WTS_VQA_PUBLIC_TEST.json"
-OUTPUT_ROOT="${WORKSPACE_ROOT}/processed_data_subtask2_best_view"
+# WORKSPACE_ROOT is full path untill ..../TrafficInternVL
+WORKSPACE_ROOT="$(pwd)/../.."
+TEST_VIDEOS_DIR="${WORKSPACE_ROOT}/data-preparation/task1/data/SubTask1-Caption/WTS_DATASET_PUBLIC_TEST"
+TEST_BBOX_DIR="${WORKSPACE_ROOT}/data-preparation/task1/data/SubTask1-Caption/WTS_DATASET_PUBLIC_TEST_BBOX"
+VQA_TEST_FILE="${WORKSPACE_ROOT}/data-preparation/task1/data/SubTask2-VQA/WTS_VQA_PUBLIC_TEST.json"
+OUTPUT_ROOT="${WORKSPACE_ROOT}/data-preparation/task2/processed_data_subtask2_best_view"
 OUTPUT_JSONL="${OUTPUT_ROOT}/wts_dataset_test_subtask2_best_view.jsonl"
 NUM_WORKERS=32
 
@@ -103,12 +104,12 @@ BBOX_COUNT=$(find "${TEST_BBOX_DIR}" -name "*_bbox.json" 2>/dev/null | wc -l || 
 echo "  • Bbox annotation files: ${BBOX_COUNT}"
 
 # Check VQA file
-VQA_ENTRIES=$(python -c "import json; data=json.load(open('${VQA_TEST_FILE}')); print(len(data))" 2>/dev/null || echo "unknown")
+VQA_ENTRIES=$(python3 -c "import json; data=json.load(open('${VQA_TEST_FILE}')); print(len(data))" 2>/dev/null || echo "unknown")
 echo "  • VQA test entries: ${VQA_ENTRIES}"
 
 # Show sample scenarios with comprehensive analysis
 echo -e "${BLUE}STATS: Sample scenario analysis (environment + event phases):${NC}"
-python -c "
+python3 -c "
 import json
 from pathlib import Path
 
@@ -212,7 +213,7 @@ echo -e "${GREEN}SUCCESS: Output directory created: ${OUTPUT_ROOT}${NC}"
 echo -e "${BLUE}PROCESSING: Starting SubTask2 VQA test data processing (comprehensive processing)...${NC}"
 echo "Start time: $(date)"
 
-python prepare_data_test_subtask2_best_view.py \
+python3 prepare_data_test_subtask2_best_view.py \
   --test_videos_dir "${TEST_VIDEOS_DIR}" \
   --test_bbox_dir "${TEST_BBOX_DIR}" \
   --vqa_test_file "${VQA_TEST_FILE}" \
@@ -247,7 +248,7 @@ if [ $EXIT_CODE -eq 0 ]; then
         
         # Analyze comprehensive selection results
         echo -e "${BLUE}STATS: Analyzing selection results (environment + event phases):${NC}"
-        python -c "
+        python3 -c "
 import json
 from collections import Counter
 
@@ -360,7 +361,7 @@ if image_counts:
         echo "  • Images directory: ${OUTPUT_ROOT}/images"
         
         # Calculate expected images based on question types
-        python -c "
+        python3 -c "
 import json
 with open('${OUTPUT_JSONL}', 'r') as f:
     samples = [json.loads(line) for line in f]

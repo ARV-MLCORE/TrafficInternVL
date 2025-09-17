@@ -22,6 +22,9 @@ from concurrent.futures import as_completed
 import numpy as np
 import random
 import re
+import os, sys
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 # Disable OpenCV threading to avoid conflicts with multiprocessing
 cv2.setNumThreads(1)

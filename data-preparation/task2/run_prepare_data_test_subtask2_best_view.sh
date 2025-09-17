@@ -11,7 +11,7 @@
 set -e  # Exit on any error
 
 # Configuration
-# WORKSPACE_ROOT is full path untill ..../TrafficInternVL
+# WORKSPACE_ROOT is full path untill ~/TrafficInternVL
 WORKSPACE_ROOT="$(pwd)/../.."
 TEST_VIDEOS_DIR="${WORKSPACE_ROOT}/data-preparation/task1/data/SubTask1-Caption/WTS_DATASET_PUBLIC_TEST"
 TEST_BBOX_DIR="${WORKSPACE_ROOT}/data-preparation/task1/data/SubTask1-Caption/WTS_DATASET_PUBLIC_TEST_BBOX"
@@ -303,9 +303,31 @@ if selection_types:
 # Images per sample analysis from actual conversation content
 image_counts = []
 for sample in samples:
-    conv = sample['conversations'][0][0]
-    image_count = len([c for c in conv['content'] if c['type'] == 'image'])
-    image_counts.append(image_count)
+    try:
+        # Handle conversations structure: conversations[0] is a list with [system_msg, user_msg]
+        # Images are in the user message (index 1), not system message (index 0)
+        conversations = sample.get('conversations', [])
+        if conversations and len(conversations) > 0:
+            conv_list = conversations[0]
+            if isinstance(conv_list, list) and len(conv_list) > 1:
+                # Get the user message (index 1) which contains the images
+                user_msg = conv_list[1]
+                if isinstance(user_msg, dict) and 'content' in user_msg:
+                    content = user_msg['content']
+                    if isinstance(content, list):
+                        image_count = len([c for c in content if isinstance(c, dict) and c.get('type') == 'image'])
+                    else:
+                        image_count = 0
+                else:
+                    image_count = 0
+            else:
+                image_count = 0
+        else:
+            image_count = 0
+        image_counts.append(image_count)
+    except (TypeError, KeyError, IndexError) as e:
+        # If there's any error, default to 0 images
+        image_counts.append(0)
 
 if image_counts:
     avg_images = sum(image_counts) / len(image_counts)
@@ -323,13 +345,37 @@ if image_counts:
     env_samples = [s for s in samples if s.get('question_type') == 'environment']
     phase_samples = [s for s in samples if s.get('question_type') == 'vqa']
     
+    def safe_count_images(sample):
+        try:
+            # Handle conversations structure: conversations[0] is a list with [system_msg, user_msg]
+            # Images are in the user message (index 1), not system message (index 0)
+            conversations = sample.get('conversations', [])
+            if conversations and len(conversations) > 0:
+                conv_list = conversations[0]
+                if isinstance(conv_list, list) and len(conv_list) > 1:
+                    # Get the user message (index 1) which contains the images
+                    user_msg = conv_list[1]
+                    if isinstance(user_msg, dict) and 'content' in user_msg:
+                        content = user_msg['content']
+                        if isinstance(content, list):
+                            return len([c for c in content if isinstance(c, dict) and c.get('type') == 'image'])
+            return 0
+        except (TypeError, KeyError, IndexError):
+            return 0
+    
     if env_samples:
-        env_image_counts = [len([c for c in s['conversations'][0][0]['content'] if c['type'] == 'image']) for s in env_samples]
-        print(f'  • Environment questions: {len(env_samples)} samples, avg {sum(env_image_counts)/len(env_image_counts):.1f} images (expected: 2.0)')
+        env_image_counts = [safe_count_images(s) for s in env_samples]
+        if env_image_counts:
+            print(f'  • Environment questions: {len(env_samples)} samples, avg {sum(env_image_counts)/len(env_image_counts):.1f} images (expected: 2.0)')
+        else:
+            print(f'  • Environment questions: {len(env_samples)} samples, avg 0.0 images (expected: 2.0)')
     
     if phase_samples:
-        phase_image_counts = [len([c for c in s['conversations'][0][0]['content'] if c['type'] == 'image']) for s in phase_samples]
-        print(f'  • Event phase questions: {len(phase_samples)} samples, avg {sum(phase_image_counts)/len(phase_image_counts):.1f} images')
+        phase_image_counts = [safe_count_images(s) for s in phase_samples]
+        if phase_image_counts:
+            print(f'  • Event phase questions: {len(phase_samples)} samples, avg {sum(phase_image_counts)/len(phase_image_counts):.1f} images')
+        else:
+            print(f'  • Event phase questions: {len(phase_samples)} samples, avg 0.0 images')
 "
         
         # Show sample directories

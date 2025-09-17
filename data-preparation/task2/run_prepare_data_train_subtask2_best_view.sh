@@ -12,7 +12,7 @@
 set -e  # Exit on any error
 
 # Configuration
-# WORKSPACE_ROOT is full path untill ..../TrafficInternVL
+# WORKSPACE_ROOT is full path untill ~/TrafficInternVL
 WORKSPACE_ROOT="$(pwd)/../.."
 DATA_ROOT="${WTS_DATA_ROOT:-${WORKSPACE_ROOT}/data-preparation/task1/data/wts_dataset_zip}"
 OUT_ROOT="${WTS_OUT_ROOT:-${WORKSPACE_ROOT}/data-preparation/task2/processed_data_subtask2_best_view}"
@@ -91,7 +91,7 @@ mkdir -p "${OUT_ROOT}/images"
 
 # Set output paths
 IMAGES_OUT="${OUT_ROOT}/images"
-JSONL_OUT="${OUT_ROOT}/wts_dataset_vqa_best_view_train.jsonl"
+JSONL_OUT="${OUT_ROOT}/wts_dataset_train_subtask2_best_view.jsonl"
 
 echo -e "${GREEN}SUCCESS: Output directory created: ${OUT_ROOT}${NC}"
 echo ""

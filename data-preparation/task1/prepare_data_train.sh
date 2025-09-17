@@ -1,7 +1,7 @@
 #!/bin/bash
 
 num_worker=32
-root="/home/deepzoom/arv-aicity2-data/Park/AICITY2024_Track2_AliOpenTrek_CityLLaVA/data_preprocess/data/"
+root="/home/deepzoom/arv-aicity2-data/Park/AICITY2024_Track2_AliOpenTrek_CityLLaVA/data_preprocess/data"
 save_folder="/home/deepzoom/TrafficInternVL/data-preparation/task1/processed_anno" # Store json files 
 splits=("train" "val")
 scale=1.5

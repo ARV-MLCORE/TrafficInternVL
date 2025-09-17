@@ -12,7 +12,6 @@ The **AI City Challenge Track 2: Traffic Safety Description and Analysis** focus
 - **Incident Description**: Describing moments leading up to traffic incidents
 - **Normal Traffic Flow Analysis**: Capturing details about regular pedestrian and vehicle behavior  
 - **Video Question-Answering**: Fine-grained understanding assessment through Q&A tasks
-- **Enhanced Dataset**: Features 3D gaze annotations and traffic video question answering
 - **Evaluation Metrics**: Accuracy on question answering, caption quality, and scene reconstruction fidelity
 
 ## 📁 Project Structure
@@ -47,6 +46,8 @@ TrafficInternVL/
 ```
 
 ## 🚀 Quick Start Guide
+
+> ⚠️ **Important**: Before running any .sh scripts, please check and modify the paths in the script files to match your local machine setup. The paths in the code are from the original competition participants and can be changed to match your local environment.
 
 ### Step 1: Download and Setup Data
 
@@ -83,7 +84,7 @@ TrafficInternVL/
 1. **Run data preparation script:**
    ```bash
    cd data-preparation/task1
-   # Update paths in the script first, then run:
+   # ⚠️ Important: Check and modify paths in prepare_data_train.sh before running
    ./prepare_data_train.sh
    ```
    This will generate: `wts_bdd_local_train.json`
@@ -91,6 +92,7 @@ TrafficInternVL/
 2. **Process annotations to InternVL format:**
    ```bash
    cd processed_anno/internvl_format/
+   # ⚠️ Important: Check paths in final_dataset.sh and update_prompt.sh before running
    ./final_dataset.sh
    ./update_prompt.sh
    ```
@@ -120,6 +122,7 @@ TrafficInternVL/
 2. **Run test data preparation:**
    ```bash
    cd data-preparation/task1
+   # ⚠️ Important: Check and modify paths in prepare_data_test.sh before running
    ./prepare_data_test.sh
    ```
 
@@ -128,12 +131,13 @@ TrafficInternVL/
 1. **Setup training environment:**
    ```bash
    cd models-training
+   # ⚠️ Important: Check and modify paths in setup_environment.sh before running
    ./setup_environment.sh
    ```
 
 2. **Start training:**
    ```bash
-   # Edit train.sh to modify output_dir if needed, then run:
+   # Important: Check and modify paths in train.sh before running
    ./train.sh
    ```
    

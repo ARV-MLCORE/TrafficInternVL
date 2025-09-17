@@ -208,3 +208,13 @@ __marimo__/
 data-preparation/task1/data/test_part/
 data-preparation/task1/data/generate_test_frames/
 models-training/model
+models-training/LLaMA-Factory
+models-training/model_repository
+models-training/result_backup
+data-preparation/task1/data-prep-env
+data-preparation/task1/data/BDD_PC_5K
+data-preparation/task1/data/WTS
+.gitignore
+.gitattributes
+LLaMA-Factory/
+models-training/llama-factory-env

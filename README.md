@@ -205,5 +205,6 @@ cd models-training
 - Terminal: use `bash` (not `sh`) for colored output and echo formatting.
 
 ## Reference
+- AI City Challenge — <a href="https://www.aicitychallenge.org/" target="_blank" rel="noopener noreferrer">Official Website</a>
 - CityLLaVA: Efficient Fine-Tuning for VLMs in City Scenario — <a href="https://doi.org/10.48550/arXiv.2405.03194" target="_blank" rel="noopener noreferrer">Paper (arXiv:2405.03194)</a> · <a href="https://github.com/alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA" target="_blank" rel="noopener noreferrer">Code (AliOpenTrek CityLLaVA)</a>
 - LLaMA-Factory — Unified Efficient Fine-Tuning of 100+ LLMs & VLMs: <a href="https://github.com/hiyouga/LLaMA-Factory" target="_blank" rel="noopener noreferrer">GitHub</a>

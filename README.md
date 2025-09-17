@@ -1,6 +1,6 @@
 # TrafficInternVL - Setup and Training Guide
 
-🏆 **4th Place Achievement in AI City Challenge 2024 Track 2: Traffic Safety Description and Analysis**
+🏆 **4th Place Achievement in AI City Challenge 2025 Track 2: Traffic Safety Description and Analysis**
 
 This repository contains the complete pipeline for training and inference using the TrafficInternVL model for traffic scene understanding.
 

@@ -1,252 +1,188 @@
-# TrafficInternVL - Setup and Training Guide
+# TrafficInternVL — Quick Start
 
-🏆 **4th Place Achievement in AI City Challenge 2025 Track 2: Traffic Safety Description and Analysis**
+🏆 4th Place in AI City Challenge 2025 Track 2
 
-This repository contains the complete pipeline for training and inference using the TrafficInternVL model for traffic scene understanding.
+TrafficInternVL provides a complete pipeline for traffic scene understanding: data prep (caption + VQA), training, export, and inference.
 
-## 🎯 About AI City Challenge Track 2
+## Requirements
+- Conda environment with Python 3.10 (recommended)
+- CUDA 12.2 installed (driver/toolkit) for training
+- Install dependencies with `pip install -r requirements.txt`
+- Ensure dataset is downloaded locally (see below)
+- Hardware: peak GPU memory ~86.5 GB (reduce batch/grad-accum if less)
 
-The **AI City Challenge Track 2: Traffic Safety Description and Analysis** focuses on using multiple cameras and viewpoints to describe both the moments leading up to incidents and normal traffic flow, capturing all relevant details about pedestrian and vehicle behavior. The challenge includes:
-
-- **Multi-view Analysis**: Utilizing multiple camera perspectives for comprehensive scene understanding
-- **Incident Description**: Describing moments leading up to traffic incidents
-- **Normal Traffic Flow Analysis**: Capturing details about regular pedestrian and vehicle behavior  
-- **Video Question-Answering**: Fine-grained understanding assessment through Q&A tasks
-- **Evaluation Metrics**: Accuracy on question answering, caption quality, and scene reconstruction fidelity
-
-## 📁 Project Structure
-
-After setup, your project structure should look like this:
+## Project Structure
 
 ```
 TrafficInternVL/
 ├── data-preparation/
-│   └── task1/
-│       ├── data/
-│       │   ├── BDD_PC_5k/
-│       │   │   ├── annotations/
-│       │   │   │   ├── bbox_annotated/
-│       │   │   │   ├── bbox_generated/
-│       │   │   │   └── caption/
-│       │   │   └── videos/
-│       │   ├── WTS/
-│       │   │   ├── annotations/
-│       │   │   │   ├── bbox_annotated/
-│       │   │   │   ├── bbox_generated/
-│       │   │   │   └── caption/
-│       │   │   └── videos/
-│       │   └── test_part/
-│       │       ├── view_used_as_main_reference_for_multiview_scenario.csv
-│       │       ├── WTS_DATASET_PUBLIC_TEST/
-│       │       └── WTS_DATASET_PUBLIC_TEST_BBOX/
+│   ├── task1/
+│   │   ├── data/
+│   │   │   ├── BDD_PC_5k/
+│   │   │   │   ├── annotations/
+│   │   │   │   │   ├── bbox_annotated/
+│   │   │   │   │   ├── bbox_generated/
+│   │   │   │   │   └── caption/
+│   │   │   │   └── videos/
+│   │   │   ├── WTS/
+│   │   │   │   ├── annotations/
+│   │   │   │   │   ├── bbox_annotated/
+│   │   │   │   │   ├── bbox_generated/
+│   │   │   │   │   └── caption/
+│   │   │   │   └── videos/
+│   │   │   ├── SubTask1-Caption/
+│   │   │   │   ├── WTS_DATASET_PUBLIC_TEST/
+│   │   │   │   └── WTS_DATASET_PUBLIC_TEST_BBOX/
+│   │   │   ├── SubTask2-VQA/
+│   │   │   │   └── WTS_VQA_PUBLIC_TEST.json
+│   │   │   └── wts_dataset_zip/
+│   │   └── ... # python and shell scripts
+│   └── task2/
+│       ├── processed_data_subtask2_best_view/
+│       │   ├── images/
+│       │   │   ├── train/
+│       │   │   └── test/
+│       │   ├── wts_dataset_train_subtask2_best_view.jsonl
+│       │   └── wts_dataset_test_subtask2_best_view.jsonl
 │       └── ... # python and shell scripts
 ├── models-training/
 │   └── data/
 └── ... # other project files
 ```
 
-## 🚀 Quick Start Guide
+## 1) Setup
+```bash
+cd <YOUR_PROJECT_PATH>/TrafficInternVL
+conda create -n trafficinternvl python=3.10 -y
+conda activate trafficinternvl
+pip install -r requirements.txt
+# Ensure your PyTorch build matches CUDA 12.2
+```
 
-> ⚠️ **Important**: Before running any .sh scripts, please check and modify the paths in the script files to match your local machine setup. The paths in the code are from the original competition participants and can be changed to match your local environment.
+## 2) Data Download & Paths
+- Place datasets under:
+  - `data-preparation/task1/data/`
+- Update paths in scripts to your local project path:
+```bash
+# Example (task1 scripts)
+root="<YOUR_PROJECT_PATH>/TrafficInternVL/data-preparation/task1/data/"
+save_folder="<YOUR_PROJECT_PATH>/TrafficInternVL/data-preparation/task1/processed_anno/"
+```
 
-### Step 1: Download and Setup Data
+## 3) Task 1 — Caption Data
+- Prepare training data:
+```bash
+cd data-preparation/task1
+# Edit paths in prepare_data_train.sh first
+./prepare_data_train.sh   # outputs: wts_bdd_local_train.json
+```
+- Convert to InternVL format and copy to training dir:
+```bash
+cd processed_anno/internvl_format/
+# Edit paths in final_dataset.sh and update_prompt.sh if needed
+./final_dataset.sh
+./update_prompt.sh        # outputs: final_local_train_dataset.json
+cp final_local_train_dataset.json ../../models-training/data/
+```
+- Prepare test data (optional):
+```bash
+cd data-preparation/task1
+# Edit test_root & generate_test_frames_path in prepare_data_test.sh
+./prepare_data_test.sh
+```
 
-1. **Download the dataset** and place it under:
-   ```
-   <YOUR_PROJECT_PATH>/TrafficInternVL/data-preparation/task1/data/
-   ```
+## 4) Task 2 — VQA (Best View) Data
+- Prerequisite: Task 1 data present in `data-preparation/task1/data/`
+- Training split:
+```bash
+cd data-preparation/task2
+bash run_prepare_data_train_subtask2_best_view.sh
+# outputs:
+# - processed_data_subtask2_best_view/wts_dataset_train_subtask2_best_view.jsonl
+# - processed_data_subtask2_best_view/images/train/
+```
+- Test split:
+```bash
+cd data-preparation/task2
+bash run_prepare_data_test_subtask2_best_view.sh
+# outputs:
+# - processed_data_subtask2_best_view/wts_dataset_test_subtask2_best_view.jsonl
+# - processed_data_subtask2_best_view/images/test/
+```
 
-2. **Update configuration paths** in the data preparation scripts:
-   - Edit the data preparation scripts to update these paths to match your setup:
-   ```bash
-   root="<YOUR_PROJECT_PATH>/TrafficInternVL/data-preparation/task1/data/"
-   save_folder="<YOUR_PROJECT_PATH>/TrafficInternVL/data-preparation/task1/processed_anno/"
-   ```
+- Quick verification:
+```bash
+wc -l processed_data_subtask2_best_view/*.jsonl
+find processed_data_subtask2_best_view/images -name "*.jpg" | wc -l
+head -n 1 processed_data_subtask2_best_view/wts_dataset_train_subtask2_best_view.jsonl | python3 -m json.tool
+```
 
-### Step 2: Environment Setup
+## 5) Train
+```bash
+cd models-training
+# Edit paths in setup_environment.sh if needed
+./setup_environment.sh
 
-1. **Create and activate virtual environment:**
-   ```bash
-   cd <YOUR_PROJECT_PATH>/TrafficInternVL
-   python -m venv env
-   source env/bin/activate  # On Windows: env\Scripts\activate
-   ```
+# Edit paths/options in train.sh if needed
+./train.sh
+```
+Notes:
+- Default dataset name is set in `models-training/data/dataset_info.json` (should be `aicity_local_dataset`).
+- Default model: `OpenGVLab/InternVL3-8B-hf` with LoRA rank 64.
+- Default output dir: `model/InternVL-38B/r8-task1-github-test`.
 
-2. **Install dependencies:**
-   ```bash
-   pip install -r requirements.txt
-   ```
+## 6) Export & Inference
+- Export merged model (base + LoRA):
+```bash
+cd models-training
+# In export.sh set:
+# --adapter_name_or_path=model/InternVL-38B/r8-task1-github-test
+# --export_dir=./exported_models/your_exported_model
+./export.sh
+```
+- Inference:
+```bash
+# In inference_image_input.sh set:
+# --model_path=./exported_models/your_exported_model
+# --test_data_dir=<YOUR_PROJECT_PATH>/TrafficInternVL/data-preparation/task1/data/generate_test_frames/bbox_local
+./inference_image_input.sh
+```
 
-### Step 3: Prepare Training Data
+## Configuration Checklist
+- Task 1 scripts:
+  - `root`, `save_folder`
+  - `test_root`, `generate_test_frames_path` in `prepare_data_test.sh`
+- Task 2 scripts:
+  - Verify `data-preparation/task1/data/` exists
+  - Check `DATA_ROOT`, `TEST_VIDEOS_DIR`, `TEST_BBOX_DIR`, `VQA_TEST_FILE`, `OUTPUT_ROOT`
+- Training scripts:
+  - `output_dir` in `train.sh`
+  - Dataset in `models-training/data/dataset_info.json`
+- Export & inference scripts:
+  - `--adapter_name_or_path`, `--export_dir`, `--model_path`, `--test_data_dir`
 
-**Note:** Our data preparation methodology is based on the CityLLaVA framework <mcreference link="https://github.com/alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA" index="0">0</mcreference>, which achieved 1st place in the AICITY2024 Track 2 challenge. The approach employs bounding boxes for optimal visual data preprocessing, including video best-view selection and visual prompt engineering <mcreference link="https://doi.org/10.48550/arXiv.2405.03194" index="1">1</mcreference>.
+## Key Scripts
+- Task 1 (Caption):
+  - `data-preparation/task1/prepare_data_train.sh`
+  - `data-preparation/task1/prepare_data_test.sh`
+  - `data-preparation/task1/processed_anno/internvl_format/final_dataset.sh`
+  - `data-preparation/task1/processed_anno/internvl_format/update_prompt.sh`
+- Task 2 (VQA Best View):
+  - `data-preparation/task2/run_prepare_data_train_subtask2_best_view.sh`
+  - `data-preparation/task2/run_prepare_data_test_subtask2_best_view.sh`
+  - `data-preparation/task2/prepare_data_train_subtask2_best_view.py`
+  - `data-preparation/task2/prepare_data_test_subtask2_best_view.py`
+- Training & Inference:
+  - `models-training/setup_environment.sh`
+  - `models-training/train.sh`
+  - `models-training/export.sh`
+  - `models-training/inference_image_input.sh`
 
-1. **Run data preparation script:**
-   ```bash
-   cd data-preparation/task1
-   # ⚠️ Important: Check and modify paths in prepare_data_train.sh before running
-   ./prepare_data_train.sh
-   ```
-   This will generate: `wts_bdd_local_train.json`
+## Troubleshooting (Quick)
+- Paths: most errors are path-related—double-check the variables listed above.
+- Environment: ensure your venv is active and `pip install -r requirements.txt` succeeded.
+- Task 2 performance: reduce `NUM_WORKERS` if running out of memory.
+- Terminal: use `bash` (not `sh`) for colored output and echo formatting.
 
-2. **Process annotations to InternVL format:**
-   ```bash
-   cd processed_anno/internvl_format/
-   # ⚠️ Important: Check paths in final_dataset.sh and update_prompt.sh before running
-   ./final_dataset.sh
-   ./update_prompt.sh
-   ```
-   This will generate: `final_local_train_dataset.json`
-
-3. **Copy dataset to training directory:**
-   ```bash
-   cp final_local_train_dataset.json ../../models-training/data/
-   ```
-
-4. **Update dataset configuration:**
-   The dataset info is already configured in:
-   ```
-   models-training/data/dataset_info.json
-   ```
-
-### Step 4: Prepare Test Data
-
-**Note:** The test data preparation follows the same CityLLaVA methodology for optimal visual preprocessing and best-view selection <mcreference link="https://github.com/alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA" index="0">0</mcreference>.
-
-1. **Update test data paths** in `prepare_data_test.sh`:
-   ```bash
-   test_root="<YOUR_PROJECT_PATH>/TrafficInternVL/data-preparation/task1/data/test_part"
-   generate_test_frames_path="./data/generate_test_frames"
-   ```
-
-2. **Run test data preparation:**
-   ```bash
-   cd data-preparation/task1
-   # ⚠️ Important: Check and modify paths in prepare_data_test.sh before running
-   ./prepare_data_test.sh
-   ```
-
-### Step 5: Training Setup
-
-1. **Setup training environment:**
-   ```bash
-   cd models-training
-   # ⚠️ Important: Check and modify paths in setup_environment.sh before running
-   ./setup_environment.sh
-   ```
-
-2. **Start training:**
-   ```bash
-   # Important: Check and modify paths in train.sh before running
-   ./train.sh
-   ```
-   
-   **Note:** The training script uses:
-   - Dataset: `aicity_local_dataset`
-   - Model: `OpenGVLab/InternVL3-8B-hf`
-   - LoRA fine-tuning with rank 64
-   - Default output directory: `model/InternVL-38B/r8-task1-github-test`
-
-### Step 6: Model Export and Inference
-
-1. **Export trained model with LoRA adapter:**
-   ```bash
-   cd models-training
-   # Update the script with your trained model path
-   # Edit export.sh and set:
-   # --adapter_name_or_path=model/InternVL-38B/r8-task1-github-test (or your custom output_dir)
-   # --export_dir=./exported_models/your_exported_model
-   ./export.sh
-   ```
-
-2. **Run inference:**
-   ```bash
-   # Edit inference_image_input.sh and update:
-   # --model_path=./exported_models/your_exported_model
-   # --test_data_dir=<YOUR_PROJECT_PATH>/TrafficInternVL/data-preparation/task1/data/generate_test_frames/bbox_local
-   ./inference_image_input.sh
-   ```
-
-## 📋 Configuration Checklist
-
-Before running the pipeline, make sure to update these paths in the respective files:
-
-### Data Preparation Scripts:
-- [ ] `root` path in data preparation scripts
-- [ ] `save_folder` path in data preparation scripts
-- [ ] `test_root` in `prepare_data_test.sh`
-- [ ] `generate_test_frames_path` in `prepare_data_test.sh`
-
-### Training Scripts:
-- [ ] `output_dir` in `train.sh` (default: `model/InternVL-38B/r8-task1-github-test`)
-- [ ] Dataset name in `dataset_info.json` (should be `aicity_local_dataset`)
-
-### Export and Inference Scripts:
-- [ ] `--adapter_name_or_path` in `export.sh` (should point to `model/InternVL-38B/r8-task1-github-test` or your custom output_dir)
-- [ ] `--export_dir` in `export.sh`
-- [ ] `--model_path` in `inference_image_input.sh`
-- [ ] `--test_data_dir` in `inference_image_input.sh`
-
-## 🔧 Key Files and Scripts
-
-| File/Script | Purpose |
-|-------------|---------|
-| `data-preparation/task1/prepare_data_train.sh` | **Prepare training data** |
-| `data-preparation/task1/prepare_data_test.sh` | **Prepare test data** |
-| `data-preparation/task1/processed_anno/internvl_format/final_dataset.sh` | Convert to InternVL format |
-| `data-preparation/task1/processed_anno/internvl_format/update_prompt.sh` | Update prompts |
-| `models-training/setup_environment.sh` | Setup training environment |
-| `models-training/train.sh` | **Main training script** |
-| `models-training/data/dataset_info.json` | Dataset configuration |
-| `models-training/export.sh` | Export trained model |
-| `models-training/inference_image_input.sh` | Run inference |
-
-## 📝 Notes
-
-- Make sure to activate your virtual environment before running any scripts
-- Update all paths to match your local setup (replace `<YOUR_PROJECT_PATH>` with your actual path)
-- The training process may take several hours depending on your hardware
-- Ensure you have sufficient disk space for the dataset and model checkpoints
-
-## 🆘 Troubleshooting
-
-- If you encounter path-related errors, double-check that all paths in the configuration files are correctly updated
-- Make sure your virtual environment is activated when running scripts
-- Verify that all required dependencies are installed via `requirements.txt`
-- Check that the dataset is properly downloaded and placed in the correct directory structure
-
-## 📊 Expected Outputs
-
-- **Training data**: `wts_bdd_local_train.json`
-- **Final training dataset**: `final_local_train_dataset.json`
-- **Trained model**: Saved in your specified `output_dir`
-- **Exported model**: Saved in your specified `export_dir`
-- **Inference results**: Generated after running inference script
-
----
-
-## 📚 References
-
-### Our Achievement
-**TrafficInternVL: 4th Place Solution in AI City Challenge 2024 Track 2**  
-🏆 **4th Place** in The 9th NVIDIA AI City Challenge (CVPR 2024 workshop) Track 2: Traffic Safety Description and Analysis
-
-This project demonstrates competitive performance in traffic scene understanding, multi-view analysis, and video question-answering tasks using advanced visual language models.
-
-### Methodology Foundation
-This project builds upon the CityLLaVA framework and methodology:
-
-**CityLLaVA: Efficient Fine-Tuning for VLMs in City Scenario**  
-*Zhizhao Duan, Hao Cheng, Duo Xu, Xi Wu, Xiangxie Zhang, Xi Ye, Zhen Xie*
-
-**Abstract:** In the vast and dynamic landscape of urban settings, Traffic Safety Description and Analysis plays a pivotal role in applications ranging from insurance inspection to accident prevention. This paper introduces CityLLaVA, a novel fine-tuning framework for Visual Language Models (VLMs) designed for urban scenarios. CityLLaVA enhances model comprehension and prediction accuracy through (1) employing bounding boxes for optimal visual data preprocessing, including video best-view selection and visual prompt engineering during both training and testing phases; (2) constructing concise Question-Answer sequences and designing textual prompts to refine instruction comprehension; (3) implementing block expansion to fine-tune large VLMs efficiently; and (4) advancing prediction accuracy via a unique sequential questioning-based prediction augmentation. Demonstrating top-tier performance, our method achieved a benchmark score of 33.4308, securing the leading position on the leaderboard.
-
-**Paper:** [arXiv:2405.03194 [cs.CV]](https://doi.org/10.48550/arXiv.2405.03194)  
-**Code:** [GitHub - alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA](https://github.com/alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA)  
-**Achievement:** 🏆 1st Place Solution to The 8th NVIDIA AI City Challenge (CVPR 2024 workshop) Track 2  
-**Conference:** Accepted by AICITY2024 Workshop Track2 at CVPR2024
-
-### Future Opportunities
-> 🎯 **ICCV 2025**: The AI City Challenge has been officially accepted as a workshop at ICCV 2025. This presents exciting opportunities for continued advancement in computer vision and AI applications in real-world urban settings.
-
-For any issues or questions, please refer to the individual script files for more detailed configuration options.
+## Reference
+- Method inspired by CityLLaVA: `https://doi.org/10.48550/arXiv.2405.03194` and `https://github.com/alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA`.

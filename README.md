@@ -60,6 +60,7 @@ pip install -r requirements.txt
 ```
 
 ## 2) Data Download & Paths
+- Download WTS dataset: [WTS: Woven Traffic Safety Dataset](https://woven-visionai.github.io/wts-dataset-homepage/)
 - Place datasets under:
   - `data-preparation/task1/data/`
 - Update paths in scripts to your local project path:
@@ -185,4 +186,5 @@ cd models-training
 - Terminal: use `bash` (not `sh`) for colored output and echo formatting.
 
 ## Reference
-- Method inspired by CityLLaVA: `https://doi.org/10.48550/arXiv.2405.03194` and `https://github.com/alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA`.
+- CityLLaVA: Efficient Fine-Tuning for VLMs in City Scenario — [Paper (arXiv:2405.03194)](https://doi.org/10.48550/arXiv.2405.03194) · [Code (AliOpenTrek CityLLaVA)](https://github.com/alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA)
+- LLaMA-Factory — Unified Efficient Fine-Tuning of 100+ LLMs & VLMs: [GitHub](https://github.com/hiyouga/LLaMA-Factory)

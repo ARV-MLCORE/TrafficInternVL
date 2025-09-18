@@ -160,12 +160,14 @@ Notes:
 # Download the pre-trained model for Task 1
 huggingface-cli download parksarut/InternVL-38B-Video-Description --local-dir ./models-training/exported_models/task1_model
 ```
+🔗 **Model Repository**: [parksarut/InternVL-38B-Video-Description](https://huggingface.co/parksarut/InternVL-38B-Video-Description) <mcreference link="https://huggingface.co/parksarut/InternVL-38B-Video-Description/tree/main" index="0">0</mcreference>
 
 **For Task 2 (Question Answering):**
 ```bash
-# Download the pre-trained model for Task 2
-huggingface-cli download ParkkyOk/InternVL-38B-QA --local-dir ./models-training/exported_models/task2_model
+# Download the pre-trained model for Task 2 (specific subfolder)
+huggingface-cli download ParkkyOk/InternVL-38B-QA InternVL-38B-AICity-Simple-Merged --local-dir ./models-training/exported_models/task2_model
 ```
+🔗 **Model Repository**: [ParkkyOk/InternVL-38B-QA](https://huggingface.co/ParkkyOk/InternVL-38B-QA/tree/main/InternVL-38B-AICity-Simple-Merged) <mcreference link="https://huggingface.co/ParkkyOk/InternVL-38B-QA/tree/main/InternVL-38B-AICity-Simple-Merged" index="1">1</mcreference>
 
 **Note:** If you choose Option B, you can skip the training step and proceed directly to inference using the downloaded models.
 
@@ -194,7 +196,7 @@ cd models-training
 # --test_data_dir=<YOUR_PROJECT_PATH>/TrafficInternVL/data-preparation/task1/data/generate_test_frames/bbox_local
 ./inference_image_input.sh
 ```
-
+ 
 **For Task 2 (Question Answering):**
 ```bash
 cd models-training

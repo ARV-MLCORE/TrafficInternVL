@@ -243,6 +243,11 @@ cd models-training
 - Task 2 performance: reduce `NUM_WORKERS` if running out of memory.
 - Terminal: use `bash` (not `sh`) for colored output and echo formatting.
 
+## Evaluation
+We use the wts-dataset repository for evaluation.
+
+**WTS Dataset Repository**: [woven-visionai/wts-dataset](https://github.com/woven-visionai/wts-dataset)
+
 ## Reference
 - AI City Challenge — <a href="https://www.aicitychallenge.org/" target="_blank" rel="noopener noreferrer">Official Website</a>
 - CityLLaVA: Efficient Fine-Tuning for VLMs in City Scenario — <a href="https://doi.org/10.48550/arXiv.2405.03194" target="_blank" rel="noopener noreferrer">Paper</a> · <a href="https://github.com/alibaba/AICITY2024_Track2_AliOpenTrek_CityLLaVA" target="_blank" rel="noopener noreferrer">Code</a>

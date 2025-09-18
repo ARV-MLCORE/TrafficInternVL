@@ -200,9 +200,11 @@ cd models-training
 **For Task 2 (Question Answering):**
 ```bash
 cd models-training
-# In inference script set:
+# In inference_jsondata_task2.sh set:
 # --model_path=./exported_models/task2_model (if using pre-trained) OR ./exported_models/your_exported_model (if trained yourself)
-# Use appropriate inference script for Task 2
+# --test_set_json=<path_to_your_test_data>
+# --output_file=<path_to_output_results>
+./inference_jsondata_task2.sh
 ```
 
 ## Configuration Checklist

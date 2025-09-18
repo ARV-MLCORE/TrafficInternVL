@@ -137,7 +137,9 @@ find processed_data_subtask2_best_view/images -name "*.jpg" | wc -l
 head -n 1 processed_data_subtask2_best_view/wts_dataset_train_subtask2_best_view.jsonl | python3 -m json.tool
 ```
 
-## 5) Train
+## 5) Train (Optional - Skip if using pre-trained models)
+
+### Option A: Train Your Own Model
 ```bash
 cd models-training
 # Edit paths in setup_environment.sh if needed
@@ -151,7 +153,25 @@ Notes:
 - Default model: `OpenGVLab/InternVL3-8B-hf` with LoRA rank 64.
 - Default output dir: `model/InternVL-38B/r8-task1-github-test`.
 
+### Option B: Use Pre-trained Models from Hugging Face
+
+**For Task 1 (Video Description):**
+```bash
+# Download the pre-trained model for Task 1
+huggingface-cli download parksarut/InternVL-38B-Video-Description --local-dir ./models-training/exported_models/task1_model
+```
+
+**For Task 2 (Question Answering):**
+```bash
+# Download the pre-trained model for Task 2
+huggingface-cli download ParkkyOk/InternVL-38B-QA --local-dir ./models-training/exported_models/task2_model
+```
+
+**Note:** If you choose Option B, you can skip the training step and proceed directly to inference using the downloaded models.
+
 ## 6) Export & Inference
+
+### If you trained your own model (Option A):
 - Export merged model (base + LoRA):
 ```bash
 cd models-training
@@ -160,12 +180,27 @@ cd models-training
 # --export_dir=./exported_models/your_exported_model
 ./export.sh
 ```
-- Inference:
+
+### If you downloaded pre-trained models (Option B):
+You can skip the export step and proceed directly to inference using the downloaded models.
+
+### Inference:
+
+**For Task 1 (Video Description):**
 ```bash
+cd models-training
 # In inference_image_input.sh set:
-# --model_path=./exported_models/your_exported_model
+# --model_path=./exported_models/task1_model (if using pre-trained) OR ./exported_models/your_exported_model (if trained yourself)
 # --test_data_dir=<YOUR_PROJECT_PATH>/TrafficInternVL/data-preparation/task1/data/generate_test_frames/bbox_local
 ./inference_image_input.sh
+```
+
+**For Task 2 (Question Answering):**
+```bash
+cd models-training
+# In inference script set:
+# --model_path=./exported_models/task2_model (if using pre-trained) OR ./exported_models/your_exported_model (if trained yourself)
+# Use appropriate inference script for Task 2
 ```
 
 ## Configuration Checklist

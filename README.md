@@ -1,6 +1,7 @@
 # TrafficInternVL: Spatially-Guided Fine-Tuning with Caption Refinement for Fine-Grained Traffic Safety Captioning and Visual Question Answering
 
-**📄 Paper Accepted at ICCV 2025 Workshop**
+**📄 Paper Accepted at ICCV 2025 Workshop** | <a href="[https://www.aicitychallenge.org/](https://openaccess.thecvf.com/content/ICCV2025W/AICity/html/Phimsiri_TrafficInternVL_Spatially-Guided_Fine-Tuning_with_Caption_Refinement_for_Fine-Grained_Traffic_Safety_ICCVW_2025_paper.html)" target="_blank" rel="noopener noreferrer">Paper</a>
+
 
 **Authors:** Sasin Phimsiri¹*†, Sarut Sunpawatr¹*, Riu Cherdchusakulchai²*, Pornprom Kiawjak³*, Teepakorn Tosawadi¹*, Suchat Tungjitnob¹‡, Visarut Trairattanapa¹‡, Supawit Vatathanavaro¹‡, Wasu Kudisthalert¹‡, Chaitat Utintu¹, Worawit Saetan¹, Nathamon Kongsawat¹, Phawat Borisuitsawat¹, Kasisdis Mahakijdechachai¹, Nitipan Su-Inn¹, Ek Thamwiwatthana¹§, Vasin Suttichaya⁴§
 
